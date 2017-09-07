@@ -1,6 +1,6 @@
 """
     Setup file with application requirements and licensing information
-    Casey Beaird
+    Casey Beaird. Verify installation on python 2
 """
 from distutils.core import setup
 import sys
