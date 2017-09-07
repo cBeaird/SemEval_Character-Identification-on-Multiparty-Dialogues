@@ -1,0 +1,64 @@
+from conllu.parser import parse
+import tensorflow
+from nltk.corpus.reader import conll
+import os
+# """ Author Casey Beaird set up for parsing provided data and ensuring that
+# all the needed packages are installed and ready for use."""
+__author__ = "Casey Beaird"
+
+# Columns provided in the data by Conll type best i can tell
+column_data = [conll.ConllCorpusReader.CHUNK, conll.ConllCorpusReader.CHUNK,
+               conll.ConllCorpusReader.WORDS, conll.ConllCorpusReader.POS,
+               conll.ConllCorpusReader.CHUNK, conll.ConllCorpusReader.CHUNK,
+               conll.ConllCorpusReader.IGNORE, conll.ConllCorpusReader.IGNORE,
+               conll.ConllCorpusReader.NE, conll.ConllCorpusReader.NE,
+               conll.ConllCorpusReader.NE]
+
+# Simple text for testing consists of top two lines of the data
+conll_text = """#begin document (/friends-s01e01)
+/friends-s01e01   0   0           There    EX               (TOP(S(NP*)           there     -     -   Monica_Geller          *          -
+/friends-s01e01   0   1              's   VBZ                      (VP*              be     -     -   Monica_Geller          *          -
+/friends-s01e01   0   2         nothing    NN                      (NP*         nothing     -     -   Monica_Geller          *          -
+/friends-s01e01   0   3              to    TO                    (S(VP*              to     -     -   Monica_Geller          *          -
+/friends-s01e01   0   4            tell    VB                 (VP*)))))            tell     -     -   Monica_Geller          *          -
+/friends-s01e01   0   5               !     .                       *))               !     -     -   Monica_Geller          *          -
+
+/friends-s01e01   0   0              He   PRP               (TOP(S(NP*)              he     -     -   Monica_Geller          *      (284)
+/friends-s01e01   0   1              's   VBZ                      (VP*              be     -     -   Monica_Geller          *          -
+/friends-s01e01   0   2            just    RB                   (ADVP*)            just     -     -   Monica_Geller          *          -
+/friends-s01e01   0   3            some    DT                   (NP(NP*            some     -     -   Monica_Geller          *          -
+/friends-s01e01   0   4             guy    NN                        *)             guy     -     -   Monica_Geller          *      (284)
+/friends-s01e01   0   5               I   PRP              (SBAR(S(NP*)               I     -     -   Monica_Geller          *      (248)
+/friends-s01e01   0   6            work   VBP                      (VP*            work     -     -   Monica_Geller          *          -
+/friends-s01e01   0   7            with    IN                (PP*))))))            with     -     -   Monica_Geller          *          -
+/friends-s01e01   0   8               !     .                       *))               !     -     -   Monica_Geller          *          -"""
+
+
+# build simple tensor and verify that Tensorflow has been installed
+def test_tensor():
+    hello = tensorflow.constant('hello, TF')
+    sess = tensorflow.Session()
+    print(sess.run(hello))
+
+
+# build conll parser from Conll package verify that conll is installed
+def test_conll_parse():
+    parsed_text = parse(conll_text)
+    print(parsed_text)
+
+
+# build nltk conll reader to verify that nltk is installed
+def test_nltk_parse():
+    path_to_data = os.path.dirname(os.path.abspath('__file__')) + \
+        '/datasets-None-8c441e63-e82a-48e6-b1a7-07811cc80cd8-friends.train.trial/' + \
+        'friends.train.scene_delim.conll'
+    reader = conll.ConllCorpusReader(path_to_data, None, column_data)
+    print(reader)
+
+# perform package installation test
+test_tensor()
+test_conll_parse()
+test_nltk_parse()
+
+print('All imports are correct')
+exit(0)
