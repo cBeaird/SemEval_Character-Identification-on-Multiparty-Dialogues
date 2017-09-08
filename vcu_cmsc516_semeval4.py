@@ -40,7 +40,10 @@ pars = argparse.ArgumentParser(usage='Main python file for project package \'VCU
                                speaker.
                                
                                The application expects an entity map and a training file.
-                               example: python vcu_cmsc516_semeval4.py -m ./entityMap.txt -t ./trainingData.conll''',
+                               example: python vcu_cmsc516_semeval4.py -m ./entityMap.txt -t ./trainingData.conll
+                               
+                               optionally a list of column headings can be supplied that describe your conll data
+                               files. The list options are specified here in this help.''',
                                version='0.1')
 
 pars.add_argument('-m', '--map',
