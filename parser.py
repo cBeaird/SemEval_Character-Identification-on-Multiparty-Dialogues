@@ -2,9 +2,26 @@ from conllu.parser import parse
 import tensorflow
 from nltk.corpus.reader import conll
 import os
+
 # """ Author Casey Beaird set up for parsing provided data and ensuring that
 # all the needed packages are installed and ready for use."""
 __author__ = "Casey Beaird"
+
+# Document ID: /<name of the show>-<season ID><episode ID> (e.g., /friends-s01e01).
+# Scene ID: the ID of the scene within the episode.
+# Token ID: the ID of the token within the sentence.
+# Word form: the tokenized word.
+# Part-of-speech tag: the part-of-speech tag of the word (auto generated).
+# Constituency tag: the Penn Treebank style constituency tag (auto generated).
+# Lemma: the lemma of the word (auto generated).
+# Frameset ID: not provided (always "_").
+# Word sense: not provided (always "_").
+# Speaker: the speaker of this sentence.
+# Named entity tag: the named entity tag of the word (auto generated).
+# Entity ID: the entity ID of the mention, that is consistent across all documents.
+SEMEVAL_FILE_COLUMNS = ('doc_id', 'scene_id', 'token_id', 'word', 'pos', 'con_tag', 'lemma',
+                        'frameset_id', 'ws', 'speaker', 'named_entity',
+                        'entity_id')
 
 # Columns provided in the data by Conll type best i can tell
 column_data = [conll.ConllCorpusReader.CHUNK, conll.ConllCorpusReader.CHUNK,
@@ -34,6 +51,8 @@ conll_text = """#begin document (/friends-s01e01)
 /friends-s01e01   0   8               !     .                       *))               !     -     -   Monica_Geller          *          -"""
 
 
+# ID             part  word#         word  POS                  parse bit          lemma  frame sense
+
 # build simple tensor and verify that Tensorflow has been installed
 def test_tensor():
     hello = tensorflow.constant('hello, TF')
@@ -43,17 +62,19 @@ def test_tensor():
 
 # build conll parser from Conll package verify that conll is installed
 def test_conll_parse():
-    parsed_text = parse(conll_text)
+    parsed_text = parse(conll_text, SEMEVAL_FILE_COLUMNS)
     print(parsed_text)
 
 
 # build nltk conll reader to verify that nltk is installed
 def test_nltk_parse():
     path_to_data = os.path.dirname(os.path.abspath('__file__')) + \
-        '/datasets-None-8c441e63-e82a-48e6-b1a7-07811cc80cd8-friends.train.trial/' + \
-        'friends.train.scene_delim.conll'
-    reader = conll.ConllCorpusReader(path_to_data, None, column_data)
+                   '/datasets-None-8c441e63-e82a-48e6-b1a7-07811cc80cd8-friends.train.trial/' + \
+                   'friends.train.scene_delim.conll'
+    reader = conll.ConllCorpusReader(path_to_data, [path_to_data], column_data)
+    reader.ensure_loaded()
     print(reader)
+
 
 # perform package installation test
 test_tensor()
