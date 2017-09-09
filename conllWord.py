@@ -15,15 +15,15 @@ class conllWord:
         self.entity_id = entity_id
 
     def __str__(self):
-        return ("Document ID : " + self.doc_id + "\n" +
-                "Scene ID : " + self.scene_id + "\n" +
-                "Token ID : " + self.token_id + "\n" +
-                "Word : " + self.word + "\n" +
+        return ("Document ID: " + self.doc_id + "\n" +
+                "Scene ID: " + self.scene_id + "\n" +
+                "Token ID: " + self.token_id + "\n" +
+                "Word: " + self.word + "\n" +
                 "Part of Speech: " + self.pos + "\n" +
-                "Connel Tag : " + self.con_tag + "\n" +
-                "Lemma : " + self.lemma + "\n" +
-                "Frameset ID : " + self.frameset_id + "\n" +
-                "WS : " + self.ws + "\n" +
-                "Speaker : " + self.speaker + "\n" +
-                "Named Entity : " + self.named_entity + "\n" +
-                "Entity ID : " + self.entity_id + "\n")
+                "Constituency Tag: " + self.con_tag + "\n" +
+                "Lemma: " + self.lemma + "\n" +
+                "Frameset ID: " + self.frameset_id + "\n" +
+                "Word Sense: " + self.ws + "\n" +
+                "Speaker: " + self.speaker + "\n" +
+                "Named Entity: " + self.named_entity + "\n" +
+                "Entity ID: " + self.entity_id + "\n")
