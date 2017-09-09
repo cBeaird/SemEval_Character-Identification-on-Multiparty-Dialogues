@@ -43,5 +43,5 @@ ENTITY_ID = 'e_id'
 DEFAULT_HEADINGS = (DOCUMENT_ID, SCENE_ID, TOKEN_ID, WORD, POS, CONSTITUENCY,
                     LEMMA, FRAMESET_ID, WORD_SENSE, SPEAKER, NE, ENTITY_ID)
 
-# name key'd dictionary for entity ID's and string names
+# entity ID key'd dictionary for entity ID's and string names
 entity_map = None

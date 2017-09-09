@@ -62,6 +62,13 @@ arguments = pars.parse_args()
 d = vars(arguments)
 print(d)
 
+if d['columns'] != sEcm.DEFAULT_HEADINGS:
+    sEcm.DEFAULT_HEADINGS = d['columns']
+
 if d['model_file'] is not None:
     sEcm.entity_map = sEcf.build_entity_dict(d['model_file'])
+    d['model_file'].close()
+
+if d['train_file'] is not None:
+    sEcf.build_basic_probability_matrix(d['train_file'])
 
