@@ -29,7 +29,7 @@ __version__ = '0.1'
 
 DOCUMENT_ID = 'doc_id'
 SCENE_ID = 'scene_id'
-TOKEN_ID = 'token_id'
+TOKEN_ID = 'token_id' 
 WORD = 'word'
 POS = 'pos'
 CONSTITUENCY = 'constituency'
