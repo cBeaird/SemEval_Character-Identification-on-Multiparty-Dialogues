@@ -40,12 +40,12 @@ def build_basic_probability_matrix(data_file):
         raise TypeError
 
 # this is Janky need to figure out key error and gracefully continue
+# also clearly not finished
     probability_matrix = dict()
     for line in data_file:
-        idx = sEcm.DEFAULT_HEADINGS.index(sEcm.ENTITY_ID)
         p = parse(line, sEcm.DEFAULT_HEADINGS)
         if p[0]:
             try:
-                eid = p[0][0]['e_id']
+                eid = p[0][0][sEcm.ENTITY_ID]
             except KeyError:
                 print(eid)
