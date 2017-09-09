@@ -1,29 +1,16 @@
 #!/usr/bin/env python
 """
-Core elements of the model for conference resolution for SemEval 2018
+Application start for the SemEval 2018 task 4 application: conference resolution for SemEval 2018
 
-This module will contain the dict objects for reference through out the
-application. Any constant/format/list that is needed across files should
-be housed here. No functions will be defined here as this will be the root
-file for the model.
-
-The standard Conll format is used for all input data where the default form is:
-# Document ID: /<name of the show>-<season ID><episode ID> (e.g., /friends-s01e01).
-# Scene ID: the ID of the scene within the episode.
-# Token ID: the ID of the token within the sentence.
-# Word form: the tokenized word.
-# Part-of-speech tag: the part-of-speech tag of the word (auto generated).
-# Constituency tag: the Penn Treebank style constituency tag (auto generated).
-# Lemma: the lemma of the word (auto generated).
-# Frameset ID: not provided (always "_").
-# Word sense: not provided (always "_").
-# Speaker: the speaker of this sentence.
-# Named entity tag: the named entity tag of the word (auto generated).
-# Entity ID: the entity ID of the mention, that is consistent across all documents.
+This file is the main starting point for the application. This files allow for the application to
+be called with a series of input parameters to perform the different functions required by the
+application. The core functionality is in the semEval_core_functions python file while the core
+model data is in the semEval_core_model file additional information can be found in these files.
 
 """
 import argparse
-import semEval_core_model as scm
+import semEval_core_model as sEcm
+import semEval_core_functions as sEcf
 
 __author__ = 'Casey Beaird'
 __credits__ = ['Casey Beaird', 'Chase Greco', 'Brandon Watts']
@@ -46,23 +33,35 @@ pars = argparse.ArgumentParser(usage='Main python file for project package \'VCU
                                files. The list options are specified here in this help.''',
                                version='0.1')
 
-pars.add_argument('-m', '--map',
+# map file this is the entity map file for the named entities
+pars.add_argument('-mf', '--mapFile',
                   help='name of entity map the file that contains the entity names and their entity IDs',
                   type=file,
                   dest='model_file')
 
-pars.add_argument('-t', '--train',
+# training data file
+pars.add_argument('-tf', '--trainFile',
                   help='input training file for entity identifier',
                   type=file,
                   dest='train_file')
 
+# column headers for the conll file if this is not specified then the headings file is assumed to
+# be in the format from the SemEval 2018 Task 4 format that is specified in the core model file.
 pars.add_argument('-d', '--headers',
                   help='column type list for the order of columns in you training file',
                   dest='columns',
-                  choices=list(scm.DEFAULT_HEADINGS),
+                  choices=list(sEcm.DEFAULT_HEADINGS),
+                  default=sEcm.DEFAULT_HEADINGS,
                   nargs='*')
 
+# parse the command line arguments this will create the namespace class that gives access to the
+# arguments passed in the command line.
 arguments = pars.parse_args()
 
+# TODO remove test prints
 d = vars(arguments)
 print(d)
+
+if d['model_file'] is not None:
+    sEcm.entity_map = sEcf.build_entity_dict(d['model_file'])
+
