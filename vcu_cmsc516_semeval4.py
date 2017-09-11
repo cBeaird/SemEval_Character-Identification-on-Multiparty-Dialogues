@@ -70,5 +70,6 @@ if d['model_file'] is not None:
     d['model_file'].close()
 
 if d['train_file'] is not None:
-    sEcf.build_basic_probability_matrix(d['train_file'])
+    entity_mentions_and_counts = sEcf.build_basic_probability_matrix(d['train_file'])
 
+print('finished')

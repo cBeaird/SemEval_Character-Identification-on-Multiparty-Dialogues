@@ -29,7 +29,7 @@ __version__ = '0.1'
 
 DOCUMENT_ID = 'doc_id'
 SCENE_ID = 'scene_id'
-TOKEN_ID = 'token_id' 
+TOKEN_ID = 'token_id'
 WORD = 'word'
 POS = 'pos'
 CONSTITUENCY = 'constituency'
@@ -42,6 +42,8 @@ ENTITY_ID = 'e_id'
 
 DEFAULT_HEADINGS = (DOCUMENT_ID, SCENE_ID, TOKEN_ID, WORD, POS, CONSTITUENCY,
                     LEMMA, FRAMESET_ID, WORD_SENSE, SPEAKER, NE, ENTITY_ID)
+
+EMPTY = '-'
 
 # entity ID key'd dictionary for entity ID's and string names
 entity_map = None

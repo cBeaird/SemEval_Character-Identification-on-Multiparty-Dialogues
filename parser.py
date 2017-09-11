@@ -68,8 +68,12 @@ def test_conll_parse():
     connlWords = []
     for sentence in parsed_text:
         for word in sentence:
-            connlWords.append(conllWord(word.items()[0][1],word.items()[1][1],word.items()[2][1],word.items()[3][1],word.items()[4][1],word.items()[5][1],word.items()[6][1],word.items()[7][1],word.items()[8][1],word.items()[9][1],word.items()[10][1],word.items()[11][1]))
+            connlWords.append(conllWord(word.items()[0][1], word.items()[1][1], word.items()[2][1], word.items()[3][1],
+                                        word.items()[4][1], word.items()[5][1], word.items()[6][1], word.items()[7][1],
+                                        word.items()[8][1], word.items()[9][1], word.items()[10][1],
+                                        word.items()[11][1]).build(word))
     print '[%s]' % ', '.join(map(str, connlWords))
+
 
 # build nltk conll reader to verify that nltk is installed
 def test_nltk_parse():

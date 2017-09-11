@@ -35,17 +35,46 @@ def build_entity_dict(map_file):
 
     return entity_map
 
+
 def build_basic_probability_matrix(data_file):
+    # type: (probability_matrix) -> dict
+    """
+    Build basic probability matrix with the speaker the word and the entity with the associated counts for
+    who they are referring to. This is not a very pythonic way to build this dict of dicts but it is easy to
+    follow.
+
+    example: {'Monica_Geller' {'he' {'count' = 10, 222 = 5, 111 = 5}}}
+
+    :param data_file: training data file
+    :return: dictionary of dictionaries with the counts for referred entities
+    """
     if not isinstance(data_file, file):
         raise TypeError
 
-# this is Janky need to figure out key error and gracefully continue
-# also clearly not finished
+    # this is Janky need to figure out key error and gracefully continue
+    # also clearly not finished
     probability_matrix = dict()
     for line in data_file:
         p = parse(line, sEcm.DEFAULT_HEADINGS)
         if p[0]:
             try:
                 eid = p[0][0][sEcm.ENTITY_ID]
+                speaker = p[0][0][sEcm.SPEAKER]
+                word = p[0][0][sEcm.WORD]
+
+                if eid != sEcm.EMPTY:
+                    if speaker not in probability_matrix:
+                        probability_matrix[speaker] = dict()
+                        probability_matrix[speaker][word] = dict()
+                        probability_matrix[speaker][word]['count'] = 0
+                    if word not in probability_matrix[speaker]:
+                        probability_matrix[speaker][word] = dict()
+                        probability_matrix[speaker][word]['count'] = 0
+                    if eid not in probability_matrix[speaker][word]:
+                        probability_matrix[speaker][word][eid] = 0
+                    probability_matrix[speaker][word]['count'] += 1
+                    probability_matrix[speaker][word][eid] += 1
+
             except KeyError:
-                print(eid)
+                break
+    return probability_matrix

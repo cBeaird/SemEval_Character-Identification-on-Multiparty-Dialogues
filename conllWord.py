@@ -1,6 +1,26 @@
 class conllWord:
+    # brandon if you are looking for the java like way of doing class's in python it would be like this (i think)
+    doc_id = None
+    scene_id = None
+    token_id = None
+    word = None
+    pos = None
+    con_tag = None
+    lemma = None
+    frameset_id = None
+    ws = None
+    speaker = None
+    named_entity = None
+    entity_id = None
 
-    def __init__(self, doc_id, scene_id, token_id, word, pos, con_tag, lemma,frameset_id, ws, speaker, named_entity,entity_id):
+    # then you can do init without having to write it all out you just have to handle key errors in the dict
+    def build(self, parameter_dict):
+        my_stuff = vars(self)
+        for key in parameter_dict.keys():
+            my_stuff[key] = parameter_dict[key]
+
+    def __init__(self, doc_id, scene_id, token_id, word, pos, con_tag, lemma, frameset_id, ws, speaker, named_entity,
+                 entity_id):
         self.doc_id = doc_id
         self.scene_id = scene_id
         self.token_id = token_id
