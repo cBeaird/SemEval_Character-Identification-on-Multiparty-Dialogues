@@ -51,8 +51,6 @@ def build_basic_probability_matrix(data_file):
     if not isinstance(data_file, file):
         raise TypeError
 
-    # this is Janky need to figure out key error and gracefully continue
-    # also clearly not finished
     probability_matrix = dict()
     for line in data_file:
         p = parse(line, sEcm.DEFAULT_HEADINGS)
@@ -66,14 +64,11 @@ def build_basic_probability_matrix(data_file):
                     if speaker not in probability_matrix:
                         probability_matrix[speaker] = dict()
                         probability_matrix[speaker][word] = dict()
-                        probability_matrix[speaker][word]['count'] = 0
                     if word not in probability_matrix[speaker]:
                         probability_matrix[speaker][word] = dict()
-                        probability_matrix[speaker][word]['count'] = 0
-                    if eid not in probability_matrix[speaker][word]:
-                        probability_matrix[speaker][word][eid] = 0
-                    probability_matrix[speaker][word]['count'] += 1
-                    probability_matrix[speaker][word][eid] += 1
+
+                    probability_matrix[speaker][word]['count'] = probability_matrix[speaker][word].get('count', 0)+1
+                    probability_matrix[speaker][word][eid] = probability_matrix[speaker][word].get(eid, 0)+1
 
             except KeyError:
                 break

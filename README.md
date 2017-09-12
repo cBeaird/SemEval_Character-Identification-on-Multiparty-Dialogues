@@ -12,6 +12,9 @@ What things you need to install the software and how to install them
 
 ```
 Give examples
+pip install tensorflow
+pip install conllu
+pip install nltk
 ```
 
 ### Installing
