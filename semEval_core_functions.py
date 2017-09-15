@@ -37,7 +37,7 @@ def build_entity_dict(map_file):
 
 
 def build_basic_probability_matrix(data_file):
-    # type: (probability_matrix) -> dict
+    # type: (probability_matrix) -> Tuple[dict, set, set]
     """
     Build basic probability matrix with the speaker the word and the entity with the associated counts for
     who they are referring to. This is not a very pythonic way to build this dict of dicts but it is easy to
@@ -51,6 +51,8 @@ def build_basic_probability_matrix(data_file):
     if not isinstance(data_file, file):
         raise TypeError
 
+    speakers = set()
+    words = set()
     probability_matrix = dict()
     for line in data_file:
         p = parse(line, sEcm.DEFAULT_HEADINGS)
@@ -61,6 +63,8 @@ def build_basic_probability_matrix(data_file):
                 word = p[0][0][sEcm.WORD]
 
                 if eid != sEcm.EMPTY:
+                    words.add(word)
+                    speakers.add(speaker)
                     if speaker not in probability_matrix:
                         probability_matrix[speaker] = dict()
                         probability_matrix[speaker][word] = dict()
@@ -71,5 +75,5 @@ def build_basic_probability_matrix(data_file):
                     probability_matrix[speaker][word][eid] = probability_matrix[speaker][word].get(eid, 0)+1
 
             except KeyError:
-                break
-    return probability_matrix
+                continue
+    return probability_matrix, words, speakers

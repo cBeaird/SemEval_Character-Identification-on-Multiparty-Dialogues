@@ -57,10 +57,7 @@ pars.add_argument('-d', '--headers',
 # parse the command line arguments this will create the namespace class that gives access to the
 # arguments passed in the command line.
 arguments = pars.parse_args()
-
-# TODO remove test prints
 d = vars(arguments)
-print(d)
 
 if d['columns'] != sEcm.DEFAULT_HEADINGS:
     sEcm.DEFAULT_HEADINGS = d['columns']
@@ -69,7 +66,9 @@ if d['model_file'] is not None:
     sEcm.entity_map = sEcf.build_entity_dict(d['model_file'])
     d['model_file'].close()
 
+entity_mentions_and_counts = None
 if d['train_file'] is not None:
-    entity_mentions_and_counts = sEcf.build_basic_probability_matrix(d['train_file'])
+    entity_mentions_and_counts, words, speaker = sEcf.build_basic_probability_matrix(d['train_file'])
+    d['train_file'].close()
 
-print('finished')
+print('finished: there are {} speakers'.format(len(entity_mentions_and_counts)))

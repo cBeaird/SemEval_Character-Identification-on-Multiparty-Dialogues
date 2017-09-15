@@ -3,6 +3,7 @@ import tensorflow
 from nltk.corpus.reader import conll
 import os
 from conllWord import conllWord
+import re
 
 # """ Author Casey Beaird set up for parsing provided data and ensuring that
 # all the needed packages are installed and ready for use."""
@@ -85,10 +86,30 @@ def test_nltk_parse():
     print(reader)
 
 
+def get_speakers_in_file(file):
+    speakers = set()
+    with open(file, 'r') as f:
+        for line in f:
+            line_items = re.split(r"\t| {2,}", line)
+            try:
+                speakers.add(line_items[9])
+            except IndexError:
+                continue
+    return speakers
+
+
 # perform package installation test
 test_tensor()
 test_conll_parse()
 test_nltk_parse()
+# *******************************************Junk
+scene_speakers = get_speakers_in_file(os.path.dirname(os.path.abspath('__file__')) +
+                                      '/datasets-None-8c441e63-e82a-48e6-b1a7-07811cc80cd8-friends.train.trial/' +
+                                      'friends.train.scene_delim.conll')
 
+episode_speakers = get_speakers_in_file(os.path.dirname(os.path.abspath('__file__')) +
+                                      '/datasets-None-8c441e63-e82a-48e6-b1a7-07811cc80cd8-friends.train.trial/' +
+                                      'friends.train.episode_delim.conll')
+# *******************************************Junk
 print('All imports are correct')
 exit(0)
