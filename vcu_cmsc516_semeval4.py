@@ -33,11 +33,17 @@ pars = argparse.ArgumentParser(usage='Main python file for project package \'VCU
                                files. The list options are specified here in this help.''',
                                version='0.1')
 
+# model name this is the name of the model to create with new map or add to or to use with an evaluation
+pars.add_argument('-m', '--model',
+                  help='Model to be used/created/extended by the application this item should be specified always.',
+                  dest='model',
+                  required=True)
+
 # map file this is the entity map file for the named entities
 pars.add_argument('-mf', '--mapFile',
                   help='name of entity map the file that contains the entity names and their entity IDs',
                   type=file,
-                  dest='model_file')
+                  dest='map_file')
 
 # training data file
 pars.add_argument('-tf', '--trainFile',
@@ -55,20 +61,45 @@ pars.add_argument('-d', '--headers',
                   nargs='*')
 
 # parse the command line arguments this will create the namespace class that gives access to the
-# arguments passed in the command line.
+# arguments passed in the command line. This will need to be broken out to deal with all the disjoint
+# sets of operations we want:
+#     1: train and pickle training data
+#     2: init the model
+#     3: evaluate from the current model
 arguments = pars.parse_args()
 d = vars(arguments)
 
+# first thing load the model if there is one if there's not a model a new model will be built
+# with the model passed in to the applicaiton
+sEcf.load_model(d['model'])
+
+# if a map file is supplied load the entity map and add it to the model
+if d['map_file'] is not None:
+    # set the map and close the file because we don't need it anymore
+    sEcm.entity_map = sEcf.build_entity_dict(d['map_file'])
+    d['map_file'].close()
+    # update the model
+    sEcf.update_model(sEcm.ENTITY_MAP, sEcm.entity_map)
+
+# columns object will always exist because there is a default list of columns so we can set the columns
+# the training data uses the Default_headings in the model python file so we dont need to care about dealing
+# with in in a specific way
 if d['columns'] != sEcm.DEFAULT_HEADINGS:
     sEcm.DEFAULT_HEADINGS = d['columns']
 
-if d['model_file'] is not None:
-    sEcm.entity_map = sEcf.build_entity_dict(d['model_file'])
-    d['model_file'].close()
-
+# we can now get the words, speakers and the entities they are referencing using the probability function
+# we will store these dictionaries as part of our model.
+# TODO make sure we can update the model with new training data and keep the existing trained info
 entity_mentions_and_counts = None
 if d['train_file'] is not None:
-    entity_mentions_and_counts, words, speaker = sEcf.build_basic_probability_matrix(d['train_file'])
+    entity_mentions_and_counts, words, speakers = sEcf.build_basic_probability_matrix(d['train_file'])
     d['train_file'].close()
+    sEcf.update_model(sEcm.DISTRIBUTIONS, entity_mentions_and_counts)
+    sEcf.update_model(sEcm.WORDS, words)
+    sEcf.update_model(sEcm.SPEAKERS, speakers)
 
+sEcf.save_model(d['model'])
+
+# gracefully end the application
+# TODO come up with something more meaning ful
 print('finished: there are {} speakers'.format(len(entity_mentions_and_counts)))

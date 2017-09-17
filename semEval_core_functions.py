@@ -7,6 +7,8 @@ the defined functions and classes the application needs to train and evaluate th
 data to perform the entity identification task.
 
 """
+import os
+import pickle
 from conllu.parser import parse
 import semEval_core_model as sEcm
 
@@ -51,9 +53,11 @@ def build_basic_probability_matrix(data_file):
     if not isinstance(data_file, file):
         raise TypeError
 
+    # build initial data objects for the speakers and words list and the dict of use
     speakers = set()
     words = set()
     probability_matrix = dict()
+
     for line in data_file:
         p = parse(line, sEcm.DEFAULT_HEADINGS)
         if p[0]:
@@ -61,7 +65,6 @@ def build_basic_probability_matrix(data_file):
                 eid = p[0][0][sEcm.ENTITY_ID]
                 speaker = p[0][0][sEcm.SPEAKER]
                 word = p[0][0][sEcm.WORD]
-
                 if eid != sEcm.EMPTY:
                     words.add(word)
                     speakers.add(speaker)
@@ -77,3 +80,30 @@ def build_basic_probability_matrix(data_file):
             except KeyError:
                 continue
     return probability_matrix, words, speakers
+
+
+def update_model(model_item_name, model_object):
+    if sEcm.model is None:
+        sEcm.model = dict()
+
+    sEcm.model[model_item_name] = model_object
+
+
+def load_model(model_name):
+    if not os.path.isdir('./model'):
+        os.mkdir('./model')
+    if not os.path.isfile('./model/{}'.format(model_name)):
+        open('./model/{}'.format(model_name), 'w').close()
+        sEcm.model_path = './model/{}'.format(model_name)
+        return False
+
+    sEcm.model_path = './model/{}'.format(model_name)
+    with open(sEcm.model_path, 'rb') as mf:
+        sEcm.model = pickle.load(mf)
+    return True
+
+
+def save_model(model_name):
+    with open('./model/{}'.format(model_name), 'wb') as mf:
+        pickle.dump(sEcm.model, mf)
+    return True

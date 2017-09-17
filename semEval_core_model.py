@@ -27,6 +27,7 @@ __credits__ = ['Casey Beaird', 'Chase Greco', 'Brandon Watts']
 __license__ = 'MIT'
 __version__ = '0.1'
 
+# possible conll columns can be configured in any order but can only be specified once
 DOCUMENT_ID = 'doc_id'
 SCENE_ID = 'scene_id'
 TOKEN_ID = 'token_id'
@@ -40,6 +41,13 @@ SPEAKER = 'speaker'
 NE = 'ne'
 ENTITY_ID = 'e_id'
 
+# model elements this is a fixed list of items expected in a model additional elements can be
+# added by extending the model definition
+ENTITY_MAP = 'e'
+SPEAKERS = 's'
+WORDS = 'w'
+DISTRIBUTIONS = 'd'
+
 DEFAULT_HEADINGS = (DOCUMENT_ID, SCENE_ID, TOKEN_ID, WORD, POS, CONSTITUENCY,
                     LEMMA, FRAMESET_ID, WORD_SENSE, SPEAKER, NE, ENTITY_ID)
 
@@ -47,3 +55,5 @@ EMPTY = '-'
 
 # entity ID key'd dictionary for entity ID's and string names
 entity_map = None
+model_path = None
+model = None
