@@ -9,8 +9,8 @@ data to perform the entity identification task.
 """
 import os
 import pickle
-from conllu.parser import parse
 import semEval_core_model as sEcm
+from conllu.parser import parse
 
 __author__ = 'Casey Beaird'
 __credits__ = ['Casey Beaird', 'Chase Greco', 'Brandon Watts']
@@ -25,6 +25,7 @@ def build_entity_dict(map_file):
     that contains a tab delimited (entity_ID, entity_name) list of entities in the corpora.
 
     :param map_file: entity map file
+    :rtype: dict
     :return: dictionary of entity id's and string names
     """
     if not isinstance(map_file, file):
@@ -39,7 +40,7 @@ def build_entity_dict(map_file):
 
 
 def build_basic_probability_matrix(data_file):
-    # type: (probability_matrix) -> Tuple[dict, set, set]
+    # type: (probability_matrix, speakers, words) -> tuple
     """
     Build basic probability matrix with the speaker the word and the entity with the associated counts for
     who they are referring to. This is not a very pythonic way to build this dict of dicts but it is easy to
@@ -48,7 +49,8 @@ def build_basic_probability_matrix(data_file):
     example: {'Monica_Geller' {'he' {'count' = 10, 222 = 5, 111 = 5}}}
 
     :param data_file: training data file
-    :return: dictionary of dictionaries with the counts for referred entities
+    :rtype: tuple
+    :return: tuple with speakers, words and dictionary of dictionaries with the counts for referred entities
     """
     if not isinstance(data_file, file):
         raise TypeError
@@ -74,8 +76,8 @@ def build_basic_probability_matrix(data_file):
                     if word not in probability_matrix[speaker]:
                         probability_matrix[speaker][word] = dict()
 
-                    probability_matrix[speaker][word]['count'] = probability_matrix[speaker][word].get('count', 0)+1
-                    probability_matrix[speaker][word][eid] = probability_matrix[speaker][word].get(eid, 0)+1
+                    probability_matrix[speaker][word]['count'] = probability_matrix[speaker][word].get('count', 0) + 1
+                    probability_matrix[speaker][word][eid] = probability_matrix[speaker][word].get(eid, 0) + 1
 
             except KeyError:
                 continue
@@ -83,13 +85,27 @@ def build_basic_probability_matrix(data_file):
 
 
 def update_model(model_item_name, model_object):
+    """
+    sets/updates the model object to the corresponding entry in the model dictionary
+    Note!: any item in the model will need to be extended in the model file and a corresponding entry
+    needs to be build.
+    :param model_item_name: model dict key
+    :param model_object: object to be set in model
+    """
     if sEcm.model is None:
         sEcm.model = dict()
 
-    sEcm.model[model_item_name] = model_object
+    sEcm.updater_functions[model_item_name](model_object)
 
 
 def load_model(model_name):
+    # type: (bool) -> bool
+    """
+    load the pickled model from the model directory models are keyed by name
+    :param model_name: name of model to load
+    :rtype: bool
+    :return: model was loaded
+    """
     if not os.path.isdir('./model'):
         os.mkdir('./model')
     if not os.path.isfile('./model/{}'.format(model_name)):
@@ -104,6 +120,90 @@ def load_model(model_name):
 
 
 def save_model(model_name):
+    """
+    pickle and write the model to the model directory
+    :param model_name:
+    """
     with open('./model/{}'.format(model_name), 'wb') as mf:
         pickle.dump(sEcm.model, mf)
-    return True
+
+
+def update_entities(entities):
+    """
+    update the entities if the entity map grows beyond the original set
+    :param entities: entities dict(id, name)
+    """
+    if sEcm.MODEL_ENTITY_MAP in sEcm.model:
+        for key in entities.keys():
+            sEcm.model[sEcm.MODEL_ENTITY_MAP][key] = entities[key]
+    else:
+        sEcm.model[sEcm.MODEL_ENTITY_MAP] = entities
+
+
+def update_speakers(speakers):
+    """
+    update the speakers set
+    :param speakers: set of speakers
+    """
+    if sEcm.MODEL_SPEAKERS in sEcm.model:
+        for speaker in speakers:
+            sEcm.model[sEcm.MODEL_SPEAKERS].add(speaker)
+    else:
+        sEcm.model[sEcm.MODEL_SPEAKERS] = speakers
+
+
+def update_words(words):
+    """
+    update the words set
+    :param words: set of words
+    """
+    if sEcm.MODEL_WORDS in sEcm.model:
+        for word in words:
+            sEcm.model[sEcm.MODEL_WORDS].add(word)
+    else:
+        sEcm.model[sEcm.MODEL_WORDS] = words
+
+
+def update_dist_counts(counts):
+    """
+    update the distribution counts for all references
+    :param counts: dict of dicts
+    """
+    if sEcm.MODEL_DISTRIBUTIONS in sEcm.model:
+        # todo this ones is slightly more complicated but need to add new words entities and add those counts
+        sEcm.model[sEcm.MODEL_DISTRIBUTIONS] = counts
+    else:
+        sEcm.model[sEcm.MODEL_DISTRIBUTIONS] = counts
+
+
+class ConllWord:
+    def __init__(self, **kwargs):
+        self.doc_id = None
+        self.scene_id = None
+        self.token_id = None
+        self.word = None
+        self.pos = None
+        self.constituency = None
+        self.lemma = None
+        self.frame_id = None
+        self.ws = None
+        self.speaker = None
+        self.ne = None
+        self.e_id = None
+        self.extra_items = dict()
+
+        for k, v in kwargs.iteritems():
+            if hasattr(self, k):
+                vars(self)[k] = v
+            else:
+                self.extra_items[k] = v
+
+    def __str__(self):
+        return ("Document ID: {doc_id}\nScene ID: {scene_id}\nToken ID: {token_id}\n"
+                "Word: {word}\n""POS: {pos}\nConstituency Tag: {constituency}\nLemma: {lemma}\n"
+                "Frameset ID: {frame_id}\n""Word Sense: {ws}\nSpeaker: {speaker}\nNamed Entity: {ne}\n"
+                "Entity ID: {e_id}\n".format(doc_id=self.doc_id, scene_id=self.scene_id, token_id=self.token_id,
+                                             word=self.word, pos=self.pos,
+                                             constituency=self.constituency, lemma=self.lemma, frame_id=self.frame_id,
+                                             ws=self.ws, speaker=self.speaker,
+                                             ne=self.ne, e_id=self.e_id))

@@ -1,9 +1,11 @@
-from conllu.parser import parse
-import tensorflow
-from nltk.corpus.reader import conll
 import os
+import tensorflow
+import semEval_core_model as sEcm
+import semEval_core_functions as sEcf
+from conllu.parser import parse
+from nltk.corpus.reader import conll
 from conllWord import conllWord
-import re
+from semEval_core_functions import ConllWord
 
 # """ Author Casey Beaird set up for parsing provided data and ensuring that
 # all the needed packages are installed and ready for use."""
@@ -61,14 +63,20 @@ def test_tensor():
     sess = tensorflow.Session()
     print(sess.run(hello))
 
-
 # build conll parser from Conll package verify that conll is installed
 # will clean up later - Brandon
 def test_conll_parse():
-    parsed_text = parse(conll_text, SEMEVAL_FILE_COLUMNS)
+    parsed_text = parse(conll_text, sEcm.DEFAULT_HEADINGS)
     connlWords = []
     for sentence in parsed_text:
         for word in sentence:
+            cwd = ConllWord(doc_id=word.get(sEcm.DOCUMENT_ID, None), scene_id=word.get(sEcm.SCENE_ID, None),
+                            token_id=word.get(sEcm.TOKEN_ID, None), word=word.get(sEcm.WORD, None),
+                            pos=word.get(sEcm.POS, None), constituency=word.get(sEcm.CONSTITUENCY, None),
+                            lemma=word.get(sEcm.LEMMA, None), frame_id=word.get(sEcm.FRAMESET_ID, None),
+                            ws=word.get(sEcm.WORD_SENSE, None), speaker=word.get(sEcm.SPEAKER, None),
+                            ne=word.get(sEcm.NE, None), e_id=word.get(sEcm.ENTITY_ID, None))
+            print(cwd)
             connlWords.append(conllWord(word.items()[0][1], word.items()[1][1], word.items()[2][1], word.items()[3][1],
                                         word.items()[4][1], word.items()[5][1], word.items()[6][1], word.items()[7][1],
                                         word.items()[8][1], word.items()[9][1], word.items()[10][1],

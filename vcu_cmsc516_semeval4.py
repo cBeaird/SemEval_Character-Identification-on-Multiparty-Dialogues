@@ -79,7 +79,7 @@ if d['map_file'] is not None:
     sEcm.entity_map = sEcf.build_entity_dict(d['map_file'])
     d['map_file'].close()
     # update the model
-    sEcf.update_model(sEcm.ENTITY_MAP, sEcm.entity_map)
+    sEcf.update_model(sEcm.MODEL_ENTITY_MAP, sEcm.entity_map)
 
 # columns object will always exist because there is a default list of columns so we can set the columns
 # the training data uses the Default_headings in the model python file so we dont need to care about dealing
@@ -94,9 +94,9 @@ entity_mentions_and_counts = None
 if d['train_file'] is not None:
     entity_mentions_and_counts, words, speakers = sEcf.build_basic_probability_matrix(d['train_file'])
     d['train_file'].close()
-    sEcf.update_model(sEcm.DISTRIBUTIONS, entity_mentions_and_counts)
-    sEcf.update_model(sEcm.WORDS, words)
-    sEcf.update_model(sEcm.SPEAKERS, speakers)
+    sEcf.update_model(sEcm.MODEL_DISTRIBUTIONS, entity_mentions_and_counts)
+    sEcf.update_model(sEcm.MODEL_WORDS, words)
+    sEcf.update_model(sEcm.MODEL_SPEAKERS, speakers)
 
 sEcf.save_model(d['model'])
 

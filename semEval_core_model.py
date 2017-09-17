@@ -20,8 +20,9 @@ The standard Conll format is used for all input data where the default form is:
 # Speaker: the speaker of this sentence.
 # Named entity tag: the named entity tag of the word (auto generated).
 # Entity ID: the entity ID of the mention, that is consistent across all documents.
-
 """
+import semEval_core_functions
+
 __author__ = 'Casey Beaird'
 __credits__ = ['Casey Beaird', 'Chase Greco', 'Brandon Watts']
 __license__ = 'MIT'
@@ -43,10 +44,10 @@ ENTITY_ID = 'e_id'
 
 # model elements this is a fixed list of items expected in a model additional elements can be
 # added by extending the model definition
-ENTITY_MAP = 'e'
-SPEAKERS = 's'
-WORDS = 'w'
-DISTRIBUTIONS = 'd'
+MODEL_ENTITY_MAP = 'e'
+MODEL_SPEAKERS = 's'
+MODEL_WORDS = 'w'
+MODEL_DISTRIBUTIONS = 'd'
 
 DEFAULT_HEADINGS = (DOCUMENT_ID, SCENE_ID, TOKEN_ID, WORD, POS, CONSTITUENCY,
                     LEMMA, FRAMESET_ID, WORD_SENSE, SPEAKER, NE, ENTITY_ID)
@@ -57,3 +58,9 @@ EMPTY = '-'
 entity_map = None
 model_path = None
 model = None
+
+# function pointers for the model objects
+updater_functions = {MODEL_ENTITY_MAP: semEval_core_functions.update_entities,
+                     MODEL_SPEAKERS: semEval_core_functions.update_speakers,
+                     MODEL_WORDS: semEval_core_functions.update_words,
+                     MODEL_DISTRIBUTIONS: semEval_core_functions.update_dist_counts}
