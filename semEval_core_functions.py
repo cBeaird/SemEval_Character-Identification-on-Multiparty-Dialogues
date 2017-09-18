@@ -9,6 +9,7 @@ data to perform the entity identification task.
 """
 import os
 import pickle
+import re
 import semEval_core_model as sEcm
 from conllu.parser import parse
 
@@ -177,6 +178,8 @@ def update_dist_counts(counts):
 
 
 class ConllWord:
+    pattern_for_document_id = None
+
     def __init__(self, **kwargs):
         self.doc_id = None
         self.scene_id = None
@@ -207,3 +210,7 @@ class ConllWord:
                                              constituency=self.constituency, lemma=self.lemma, frame_id=self.frame_id,
                                              ws=self.ws, speaker=self.speaker,
                                              ne=self.ne, e_id=self.e_id))
+
+    @staticmethod
+    def define_doc_contents(pattern):
+        ConllWord.pattern_for_document_id = re.compile(pattern)

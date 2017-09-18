@@ -70,6 +70,8 @@ def test_conll_parse():
     connlWords = []
     for sentence in parsed_text:
         for word in sentence:
+            ConllWord.define_doc_contents('(?:\/.*-s)([0-9]*)(?:[a-z])([0-9]*)')
+
             cwd = ConllWord(doc_id=word.get(sEcm.DOCUMENT_ID, None), scene_id=word.get(sEcm.SCENE_ID, None),
                             token_id=word.get(sEcm.TOKEN_ID, None), word=word.get(sEcm.WORD, None),
                             pos=word.get(sEcm.POS, None), constituency=word.get(sEcm.CONSTITUENCY, None),
@@ -77,6 +79,7 @@ def test_conll_parse():
                             ws=word.get(sEcm.WORD_SENSE, None), speaker=word.get(sEcm.SPEAKER, None),
                             ne=word.get(sEcm.NE, None), e_id=word.get(sEcm.ENTITY_ID, None))
             print(cwd)
+
             connlWords.append(conllWord(word.items()[0][1], word.items()[1][1], word.items()[2][1], word.items()[3][1],
                                         word.items()[4][1], word.items()[5][1], word.items()[6][1], word.items()[7][1],
                                         word.items()[8][1], word.items()[9][1], word.items()[10][1],

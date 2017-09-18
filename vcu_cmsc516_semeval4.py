@@ -17,6 +17,8 @@ __credits__ = ['Casey Beaird', 'Chase Greco', 'Brandon Watts']
 __license__ = 'MIT'
 __version__ = '0.1'
 
+PATTERN_FOR_DOC_ID = '(?:\/.*-s)([0-9]*)(?:[a-z])([0-9]*)'
+
 # build the command line parser and add the options
 pars = argparse.ArgumentParser(usage='Main python file for project package \'VCU CMSC516 SemEval Task4\'',
                                formatter_class=argparse.RawTextHelpFormatter,
