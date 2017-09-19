@@ -211,6 +211,9 @@ class ConllWord:
                                              ws=self.ws, speaker=self.speaker,
                                              ne=self.ne, e_id=self.e_id))
 
+    def __repr__(self):
+        return str(self)
+
     @staticmethod
     def define_doc_contents(pattern):
         ConllWord.pattern_for_document_id = re.compile(pattern)
