@@ -181,6 +181,11 @@ class ConllWord:
     pattern_for_document_id = None
 
     def __init__(self, **kwargs):
+        """
+        constructor build initial state all fields in the core model are in the class additional
+        fields can be added and will be added to the extra items dict by name.
+        :param kwargs:
+        """
         self.doc_id = None
         self.scene_id = None
         self.token_id = None
@@ -202,6 +207,10 @@ class ConllWord:
                 self.extra_items[k] = v
 
     def __str__(self):
+        """
+        return string representation of object.
+        :return: string of a conll word
+        """
         return ("Document ID: {doc_id}\nScene ID: {scene_id}\nToken ID: {token_id}\n"
                 "Word: {word}\n""POS: {pos}\nConstituency Tag: {constituency}\nLemma: {lemma}\n"
                 "Frameset ID: {frame_id}\n""Word Sense: {ws}\nSpeaker: {speaker}\nNamed Entity: {ne}\n"
@@ -212,8 +221,27 @@ class ConllWord:
                                              ne=self.ne, e_id=self.e_id))
 
     def __repr__(self):
+        """
+        return string representation of object
+        :return: string of conll word
+        """
         return str(self)
+
+    def get_document_id_item(self, item):
+        # type: (object) -> str
+        """
+        get information from the document id attribute requires the pattern_for_document_id to be set
+        with a regular expression that parses the desired content from the doc_id
+        :param item: group requested from the matcher
+        :return: contents from the group
+        """
+        results = ConllWord.pattern_for_document_id.match(self.doc_id)
+        return results.group(item)
 
     @staticmethod
     def define_doc_contents(pattern):
+        """
+        sets the class definition of the doc id pattern parser
+        :param pattern: regular expression pattern
+        """
         ConllWord.pattern_for_document_id = re.compile(pattern)
