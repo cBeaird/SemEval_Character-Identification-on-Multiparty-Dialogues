@@ -1,11 +1,11 @@
-import tensorflow as tf
-import numpy as np
-import sys
 import semEval_core_model as sEcm
 from conllu.parser import parse
 from semEval_core_functions import ConllWord
 
-# Simple text for testing consists of top two lines of the data
+EntityMap = {}
+ENTITY_COUNT = 0
+
+# Simple text for testing consists of top two lines of the data (will be removed)
 conll_text = """#begin document (/friends-s01e01)
 /friends-s01e01   0   0           There    EX               (TOP(S(NP*)           there     -     -   Monica_Geller          *          -
 /friends-s01e01   0   1              's   VBZ                      (VP*              be     -     -   Monica_Geller          *          -
@@ -51,10 +51,17 @@ def createFeatureVectors(trainingData):
     for sentence in trainingData:
         for word in sentence:
             if containsReference(word):
-                print ("[word.scene_id, \"word.episode_id\", word.speaker, \"word.physicalID\"]" + "=>"  + word.e_id)
+                addEntity(word)
+                print (str([word.scene_id, "word.episode_id", word.speaker, EntityMap[word.word]]) + " => " + word.e_id)
 
 def containsReference(word):
     return word.e_id != "-"
+
+def addEntity(entity):
+    if not EntityMap.has_key(entity):
+        global ENTITY_COUNT
+        ENTITY_COUNT += 1
+        EntityMap[entity.word] = ENTITY_COUNT
 
 if __name__ == '__main__':
     main()
