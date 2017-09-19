@@ -4,8 +4,6 @@ import sys
 import semEval_core_model as sEcm
 from conllu.parser import parse
 from semEval_core_functions import ConllWord
-import gensim
-from nltk.corpus import brown
 
 # Simple text for testing consists of top two lines of the data
 conll_text = """#begin document (/friends-s01e01)
@@ -26,20 +24,11 @@ conll_text = """#begin document (/friends-s01e01)
 /friends-s01e01   0   7            with    IN                (PP*))))))            with     -     -   Monica_Geller          *          -
 /friends-s01e01   0   8               !     .                       *))               !     -     -   Monica_Geller          *          -"""
 
-WINDOW_SIZE = 5
-sentences = brown.sents()
-model = gensim.models.Word2Vec(sentences, min_count=1)
-model.save("brown_model")
-
 def main():
-    trainingData = test_conll_parse(conll_text)
+    trainingData = parseConll(conll_text)
     createFeatureVectors(trainingData)
 
-def getWordVector(word):
-    return model[word]
-
-
-def test_conll_parse(conll_text):
+def parseConll(conll_text):
     parsed_text = parse(conll_text, sEcm.DEFAULT_HEADINGS)
     connlWords = []
     for sentence in parsed_text:
@@ -60,15 +49,12 @@ def test_conll_parse(conll_text):
 
 def createFeatureVectors(trainingData):
     for sentence in trainingData:
-        if containsReference(sentence):
-            print (getWordVector(sentence[0].word))
+        for word in sentence:
+            if containsReference(word):
+                print ("[word.scene_id, \"word.episode_id\", word.speaker, \"word.physicalID\"]" + "=>"  + word.e_id)
 
-def containsReference(sentence):
-    containsReference = False
-    for word in sentence:
-        if word.e_id != "-":
-            containsReference = True
-    return containsReference
+def containsReference(word):
+    return word.e_id != "-"
 
 if __name__ == '__main__':
     main()
