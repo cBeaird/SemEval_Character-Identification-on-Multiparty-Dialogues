@@ -7,6 +7,7 @@ the defined functions and classes the application needs to train and evaluate th
 data to perform the entity identification task.
 
 """
+# todo need to come up with a way to define the structure of the dict that holds the 'probability matrix'
 import os
 import pickle
 import re
@@ -38,6 +39,22 @@ def build_entity_dict(map_file):
         entity_map[line_items[0]] = line_items[1]
 
     return entity_map
+
+
+def translate_file_to_object_list(data_file):
+    if not isinstance(data_file, file):
+        raise TypeError
+
+    object_list = list()
+    for line in data_file:
+        parse_line = parse(line, sEcm.DEFAULT_HEADINGS)
+        if parse_line[0]:
+            try:
+                parsed_word = parse_line[0][0]
+                object_list.append(ConllWord(**parsed_word))
+            except KeyError:
+                continue
+    return object_list
 
 
 def build_basic_probability_matrix(data_file):
@@ -171,7 +188,8 @@ def update_dist_counts(counts):
     :param counts: dict of dicts
     """
     if sEcm.MODEL_DISTRIBUTIONS in sEcm.model:
-        # todo this ones is slightly more complicated but need to add new words entities and add those counts
+        # todo this ones is slightly more complicated but need to add new words entities
+        # todo and add those counts. probably need a way to define the structure of the dict
         sEcm.model[sEcm.MODEL_DISTRIBUTIONS] = counts
     else:
         sEcm.model[sEcm.MODEL_DISTRIBUTIONS] = counts
@@ -237,6 +255,19 @@ class ConllWord:
         """
         results = ConllWord.pattern_for_document_id.match(self.doc_id)
         return results.group(item)
+
+    def get_feature_representation(self, feature_name):
+        """
+        returns an attributes hash value this is a naive way of encoding the features
+        :param feature_name: feature name
+        :return: hash representation
+        """
+        if not hasattr(self, feature_name):
+            return 0
+        if feature_name == sEcm.DOCUMENT_ID:
+            return int(self.get_document_id_item(1) + self.get_document_id_item(2))
+
+        return hash(vars(self)[feature_name])
 
     @staticmethod
     def define_doc_contents(pattern):

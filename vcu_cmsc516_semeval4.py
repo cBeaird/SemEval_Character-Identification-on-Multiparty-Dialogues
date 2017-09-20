@@ -62,7 +62,7 @@ pars.add_argument('-d', '--headers',
                   default=sEcm.DEFAULT_HEADINGS,
                   nargs='*')
 
-# parse the command line arguments this will create the namespace class that gives access to the
+# todo parse the command line arguments this will create the namespace class that gives access to the
 # arguments passed in the command line. This will need to be broken out to deal with all the disjoint
 # sets of operations we want:
 #     1: train and pickle training data
