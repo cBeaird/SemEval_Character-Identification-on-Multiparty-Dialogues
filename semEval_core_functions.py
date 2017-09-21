@@ -42,6 +42,14 @@ def build_entity_dict(map_file):
 
 
 def translate_file_to_object_list(data_file):
+    # type: (object_list) -> list
+    """
+    reads in the conll data file and returns a list of the objects in file order where
+    each object is a word in the file.
+    :param data_file: conll file
+    :return: list of ConllWord
+    :rtype: list
+    """
     if not isinstance(data_file, file):
         raise TypeError
 

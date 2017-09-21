@@ -41,6 +41,16 @@ pars.add_argument('-m', '--model',
                   dest='model',
                   required=True)
 
+# Specifying training is requested (as opposed to testing)
+pars.add_argument('-t', '--train',
+                  help='Train/extend the model {m} using the {data_file} provided.',
+                  action='store_true')
+
+# Specifying training is requested (as opposed to testing)
+pars.add_argument('-e', '--evaluate',
+                  help='Evaluate the {data_file} using the training model {m} provided.',
+                  action='store_true')
+
 # map file this is the entity map file for the named entities
 pars.add_argument('-mf', '--mapFile',
                   help='name of entity map the file that contains the entity names and their entity IDs',
@@ -48,10 +58,10 @@ pars.add_argument('-mf', '--mapFile',
                   dest='map_file')
 
 # training data file
-pars.add_argument('-tf', '--trainFile',
-                  help='input training file for entity identifier',
+pars.add_argument('-df', '--dataFile',
+                  help='Input file for either training or evaluating',
                   type=file,
-                  dest='train_file')
+                  dest='data_file')
 
 # column headers for the conll file if this is not specified then the headings file is assumed to
 # be in the format from the SemEval 2018 Task 4 format that is specified in the core model file.
@@ -62,14 +72,19 @@ pars.add_argument('-d', '--headers',
                   default=sEcm.DEFAULT_HEADINGS,
                   nargs='*')
 
+arguments = pars.parse_args()
+d = vars(arguments)
+
+# check args for problems
 # todo parse the command line arguments this will create the namespace class that gives access to the
 # arguments passed in the command line. This will need to be broken out to deal with all the disjoint
 # sets of operations we want:
 #     1: train and pickle training data
 #     2: init the model
 #     3: evaluate from the current model
-arguments = pars.parse_args()
-d = vars(arguments)
+if d['train'] and d['evaluate']:
+    print('cannot train  and evaluate at the same time on the same data file!\n')
+    exit(0)
 
 # first thing load the model if there is one if there's not a model a new model will be built
 # with the model passed in to the applicaiton
@@ -93,9 +108,9 @@ if d['columns'] != sEcm.DEFAULT_HEADINGS:
 # we will store these dictionaries as part of our model.
 # TODO make sure we can update the model with new training data and keep the existing trained info
 entity_mentions_and_counts = None
-if d['train_file'] is not None:
-    entity_mentions_and_counts, words, speakers = sEcf.build_basic_probability_matrix(d['train_file'])
-    d['train_file'].close()
+if d['data_file'] is not None:
+    entity_mentions_and_counts, words, speakers = sEcf.build_basic_probability_matrix(d['data_file'])
+    d['data_file'].close()
     sEcf.update_model(sEcm.MODEL_DISTRIBUTIONS, entity_mentions_and_counts)
     sEcf.update_model(sEcm.MODEL_WORDS, words)
     sEcf.update_model(sEcm.MODEL_SPEAKERS, speakers)
