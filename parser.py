@@ -4,7 +4,6 @@ import semEval_core_model as sEcm
 import semEval_core_functions as sEcf
 from conllu.parser import parse
 from nltk.corpus.reader import conll
-from conllWord import conllWord
 from semEval_core_functions import ConllWord
 
 # """ Author Casey Beaird set up for parsing provided data and ensuring that
