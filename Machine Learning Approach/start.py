@@ -1,32 +1,24 @@
 import semEval_core_model as sEcm
 from conllu.parser import parse
-from semEval_core_functions import ConllWord
 import csv
 import re
+import sys
+import semEval_core_model as sEcm
+import semEval_core_functions as sEcf
+
+__author__ = 'Brandon Watts'
+__credits__ = ['Casey Beaird', 'Chase Greco', 'Brandon Watts']
+__license__ = 'MIT'
+__version__ = '0.1'
 
 EntityMap = {}
 ENTITY_COUNT = 0
 
-# Simple text for testing consists of top two lines of the data (will be removed)
-conll_text = """#begin document (/friends-s01e01)
-/friends-s01e01   0   0           There    EX               (TOP(S(NP*)           there     -     -   Monica_Geller          *          -
-/friends-s01e01   0   1              's   VBZ                      (VP*              be     -     -   Monica_Geller          *          -
-/friends-s01e01   0   2         nothing    NN                      (NP*         nothing     -     -   Monica_Geller          *          -
-/friends-s01e01   0   3              to    TO                    (S(VP*              to     -     -   Monica_Geller          *          -
-/friends-s01e01   0   4            tell    VB                 (VP*)))))            tell     -     -   Monica_Geller          *          -
-/friends-s01e01   0   5               !     .                       *))               !     -     -   Monica_Geller          *          -
-
-/friends-s01e01   0   0              He   PRP               (TOP(S(NP*)              he     -     -   Monica_Geller          *      (284)
-/friends-s01e01   0   1              's   VBZ                      (VP*              be     -     -   Monica_Geller          *          -
-/friends-s01e01   0   2            just    RB                   (ADVP*)            just     -     -   Monica_Geller          *          -
-/friends-s01e01   0   3            some    DT                   (NP(NP*            some     -     -   Monica_Geller          *          -
-/friends-s01e01   0   4             guy    NN                        *)             guy     -     -   Monica_Geller          *      (284)
-/friends-s01e01   0   5               I   PRP              (SBAR(S(NP*)               I     -     -   Monica_Geller          *      (248)
-/friends-s01e01   0   6            work   VBP                      (VP*            work     -     -   Monica_Geller          *          -
-/friends-s01e01   0   7            with    IN                (PP*))))))            with     -     -   Monica_Geller          *          -
-/friends-s01e01   0   8               !     .                       *))               !     -     -   Monica_Geller          *          -"""
-
 def main():
+
+    path_to_data = sys.argv[1]
+    with open(path_to_data, 'r') as myfile:
+        conll_text = myfile.read()
     trainingData = parseConll(conll_text)
     featureVectors = createFeatureVectors(trainingData)
     writeCSV(featureVectors)
@@ -40,8 +32,8 @@ def parseConll(conll_text):
     for sentence in parsed_text:
         connlSentence = []
         for word in sentence:
-            ConllWord.define_doc_contents('(?:\/.*-s)([0-9]*)(?:[a-z])([0-9]*)')
-            cwd = ConllWord(doc_id=word.get(sEcm.DOCUMENT_ID, None), scene_id=word.get(sEcm.SCENE_ID, None),
+            sEcf.ConllWord.define_doc_contents('(?:\/.*-s)([0-9]*)(?:[a-z])([0-9]*)')
+            cwd = sEcf.ConllWord(doc_id=word.get(sEcm.DOCUMENT_ID, None), scene_id=word.get(sEcm.SCENE_ID, None),
                             token_id=word.get(sEcm.TOKEN_ID, None), word=word.get(sEcm.WORD, None),
                             pos=word.get(sEcm.POS, None), constituency=word.get(sEcm.CONSTITUENCY, None),
                             lemma=word.get(sEcm.LEMMA, None), frame_id=word.get(sEcm.FRAMESET_ID, None),
@@ -76,7 +68,10 @@ def containsReference(word):
     :param word: connlWord
     :return: Boolean value rather it contains a reference or not
     '''
-    return word.e_id != "-"
+    if word.e_id == None: # Will figure out why it is coming back as 'None' but for now this works
+        return False
+    else:
+        return re.match(r'\(\d+\)', word.e_id)
 
 def addEntity(entity):
     '''
