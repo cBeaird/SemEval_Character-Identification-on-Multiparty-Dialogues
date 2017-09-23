@@ -11,6 +11,7 @@ data to perform the entity identification task.
 import os
 import pickle
 import re
+import operator
 import semEval_core_model as sEcm
 from conllu.parser import parse
 
@@ -52,6 +53,7 @@ def translate_file_to_object_list(data_file):
     """
     if not isinstance(data_file, file):
         raise TypeError
+    data_file.seek(0)
 
     object_list = list()
     for line in data_file:
@@ -60,7 +62,7 @@ def translate_file_to_object_list(data_file):
             try:
                 parsed_word = parse_line[0][0]
                 object_list.append(ConllWord(**parsed_word))
-            except KeyError:
+            except (KeyError, ImportError):
                 continue
     return object_list
 
@@ -80,6 +82,7 @@ def build_basic_probability_matrix(data_file):
     """
     if not isinstance(data_file, file):
         raise TypeError
+    data_file.seek(0)
 
     # build initial data objects for the speakers and words list and the dict of use
     speakers = set()
@@ -203,6 +206,54 @@ def update_dist_counts(counts):
         sEcm.model[sEcm.MODEL_DISTRIBUTIONS] = counts
 
 
+def evaluate(data_file):
+    # type: (answers) -> list
+    # todo take out the print statements if they are not needed
+    """
+    evaluate the file based on the model and return a list of answers
+    :param data_file: eval file
+    :return: list of answers
+    """
+    if not isinstance(data_file, file):
+        raise TypeError
+    data_file.seek(0)
+    number = number_correct = 0.0
+    answers = list()
+
+    for line in data_file:
+        clean_line = line.rstrip()
+        if len(clean_line) == 0:
+            continue
+        if clean_line[-1] is not sEcm.EMPTY:
+            parsed_line = parse(line, sEcm.DEFAULT_HEADINGS)
+            if parsed_line[0]:
+                try:
+                    parsed_word = parsed_line[0][0]
+                    c_word = ConllWord(**parsed_word)
+                    this_speaker = sEcm.model[sEcm.MODEL_DISTRIBUTIONS].get(c_word.speaker)
+                    number += 1
+                    if this_speaker is not None:
+                        if c_word.word in this_speaker:
+                            t = this_speaker[c_word.word]
+                            t['count'] = 0
+                            answer = max(t.iteritems(), key=operator.itemgetter(1))[0]
+                            answers.append(answer)
+                            if answer == c_word.e_id:
+                                number_correct += 1
+                            print('correct: {}\t\t\tour answer:{}'.format(c_word.e_id, answer))
+                        else:
+                            print('nope')
+                    else:
+                        # todo better than just guessing please
+                        print('guess')
+                except (KeyError, ImportError):
+                    # todo this wont work here we'll need to just guess at random at worst
+                    print('This is an error that will need to be fixed')
+                    continue
+    print('total: {}, total correct: {}, accuracy: {:2f}'.format(number, number_correct, number_correct/number))
+    return answers
+
+
 class ConllWord:
     pattern_for_document_id = None
 
@@ -231,6 +282,21 @@ class ConllWord:
                 vars(self)[k] = v
             else:
                 self.extra_items[k] = v
+
+        # find and fix the parser errors and fix those we can there are two common classes of these errors
+        if self.e_id is None:
+            parser_error = self.speaker.split(' ')
+            if len(parser_error) == 2:
+                self.speaker = parser_error[0]
+                self.e_id = parser_error[1]
+            elif len(parser_error) == 1 and parser_error[0] == '*':
+                self.e_id = self.ne
+                self.ne = self.speaker
+                self.speaker = self.ws[1:]
+                self.ws = sEcm.EMPTY
+            else:
+                # there are ~50 really jacked up entries so if we find them just ignore those lines
+                raise ImportError
 
     def __str__(self):
         """

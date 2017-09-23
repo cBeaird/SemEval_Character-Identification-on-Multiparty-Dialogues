@@ -85,18 +85,13 @@ d = vars(arguments)
 if d['train'] and d['evaluate']:
     print('cannot train  and evaluate at the same time on the same data file!\n')
     exit(0)
+if d['data_file'] is None:
+    print('need a data file to evaluate or train on')
+    exit(0)
 
 # first thing load the model if there is one if there's not a model a new model will be built
 # with the model passed in to the applicaiton
 sEcf.load_model(d['model'])
-
-# if a map file is supplied load the entity map and add it to the model
-if d['map_file'] is not None:
-    # set the map and close the file because we don't need it anymore
-    sEcm.entity_map = sEcf.build_entity_dict(d['map_file'])
-    d['map_file'].close()
-    # update the model
-    sEcf.update_model(sEcm.MODEL_ENTITY_MAP, sEcm.entity_map)
 
 # columns object will always exist because there is a default list of columns so we can set the columns
 # the training data uses the Default_headings in the model python file so we dont need to care about dealing
@@ -104,19 +99,36 @@ if d['map_file'] is not None:
 if d['columns'] != sEcm.DEFAULT_HEADINGS:
     sEcm.DEFAULT_HEADINGS = d['columns']
 
-# we can now get the words, speakers and the entities they are referencing using the probability function
-# we will store these dictionaries as part of our model.
-# TODO make sure we can update the model with new training data and keep the existing trained info
-entity_mentions_and_counts = None
-if d['data_file'] is not None:
-    entity_mentions_and_counts, words, speakers = sEcf.build_basic_probability_matrix(d['data_file'])
-    d['data_file'].close()
-    sEcf.update_model(sEcm.MODEL_DISTRIBUTIONS, entity_mentions_and_counts)
-    sEcf.update_model(sEcm.MODEL_WORDS, words)
-    sEcf.update_model(sEcm.MODEL_SPEAKERS, speakers)
+if d['train']:
+    print('The model {} will be trained with the data file {}'.format(d['model'], d['data_file'].name))
+    # if a map file is supplied load the entity map and add it to the model
+    if d['map_file'] is not None:
+        # set the map and close the file because we don't need it anymore
+        sEcm.entity_map = sEcf.build_entity_dict(d['map_file'])
+        d['map_file'].close()
+        # update the model
+        sEcf.update_model(sEcm.MODEL_ENTITY_MAP, sEcm.entity_map)
 
-sEcf.save_model(d['model'])
+    # we can now get the words, speakers and the entities they are referencing using the probability function
+    # we will store these dictionaries as part of our model.
+    # TODO make sure we can update the model with new training data and keep the existing trained info
+    entity_mentions_and_counts = None
+    if d['data_file'] is not None:
+        entity_mentions_and_counts, words, speakers = sEcf.build_basic_probability_matrix(d['data_file'])
+        # also build object list
+        word_obj_list = sEcf.translate_file_to_object_list(d['data_file'])
+        d['data_file'].close()
+        sEcf.update_model(sEcm.MODEL_DISTRIBUTIONS, entity_mentions_and_counts)
+        sEcf.update_model(sEcm.MODEL_WORDS, words)
+        sEcf.update_model(sEcm.MODEL_SPEAKERS, speakers)
 
-# gracefully end the application
-# TODO come up with something more meaning ful
-print('finished: there are {} speakers'.format(len(entity_mentions_and_counts)))
+    sEcf.save_model(d['model'])
+
+elif d['evaluate']:
+    print('The model {} will be used to evaluate the data file {}'.format(d['model'], d['data_file'].name))
+    sEcf.evaluate(d['data_file'])
+
+else:
+    print('Nothing was asked of me!\nThank you and have a good day!')
+
+exit(0)
