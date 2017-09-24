@@ -112,11 +112,12 @@ if d['train']:
     # we can now get the words, speakers and the entities they are referencing using the probability function
     # we will store these dictionaries as part of our model.
     # TODO make sure we can update the model with new training data and keep the existing trained info
+    # todo fix the model to hold the new list from list of objects
     entity_mentions_and_counts = None
     if d['data_file'] is not None:
-        entity_mentions_and_counts, words, speakers = sEcf.build_basic_probability_matrix(d['data_file'])
-        # also build object list
+        # build object list
         word_obj_list = sEcf.translate_file_to_object_list(d['data_file'])
+        entity_mentions_and_counts, words, speakers = sEcf.build_basic_probability_matrix(d['data_file'])
         d['data_file'].close()
         sEcf.update_model(sEcm.MODEL_DISTRIBUTIONS, entity_mentions_and_counts)
         sEcf.update_model(sEcm.MODEL_WORDS, words)

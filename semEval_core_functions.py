@@ -67,22 +67,26 @@ def translate_file_to_object_list(data_file):
     return object_list
 
 
-def maybe_better_pm_from_parsed_data(object_list):
+def get_probability_matrix(object_list):
+    # type: (speakers, reference_words, decomposition_dict) -> tuple
     """
-    work in progress
-    :param object_list:
-    :return:
+    better way to build the "probability matrix". we first parse the file into conll objects then
+    from those object return a dictionary of the references.
+    :param object_list: list of conll objects
+    :return: tuple of speakers, words, and the dict with decomposition objects.
     """
     # todo finish building this out
     speakers = set()
+    reference_words = set()
     decomposition_dict = dict()
     for word in object_list:
         if word.e_id is not sEcm.EMPTY:
             speakers.add(word.speaker)
+            reference_words.add(word.word)
             decomposition_dict[word.speaker] = decomposition_dict.get(word.speaker, CorpusDistributions(word.speaker))
             decomposition_dict[word.speaker].add_word(word.word, word.e_id)
 
-    return speakers, decomposition_dict
+    return speakers, reference_words, decomposition_dict
 
 
 def build_basic_probability_matrix(data_file):

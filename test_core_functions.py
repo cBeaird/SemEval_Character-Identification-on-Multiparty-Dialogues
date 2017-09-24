@@ -8,22 +8,22 @@ from semEval_core_functions import ConllWord
 class TestConllWord(TestCase):
     conll_word = None
     conll_text = """#begin document (/friends-s01e01)
-    /friends-s01e01   0   0           There    EX               (TOP(S(NP*)           there     -     -   Monica_Geller          *          -
-    /friends-s01e01   0   1              's   VBZ                      (VP*              be     -     -   Monica_Geller          *          -
-    /friends-s01e01   0   2         nothing    NN                      (NP*         nothing     -     -   Monica_Geller          *          -
-    /friends-s01e01   0   3              to    TO                    (S(VP*              to     -     -   Monica_Geller          *          -
-    /friends-s01e01   0   4            tell    VB                 (VP*)))))            tell     -     -   Monica_Geller          *          -
-    /friends-s01e01   0   5               !     .                       *))               !     -     -   Monica_Geller          *          -
+/friends-s01e01   0   0           There    EX               (TOP(S(NP*)           there     -     -   Monica_Geller          *          -
+/friends-s01e01   0   1              's   VBZ                      (VP*              be     -     -   Monica_Geller          *          -
+/friends-s01e01   0   2         nothing    NN                      (NP*         nothing     -     -   Monica_Geller          *          -
+/friends-s01e01   0   3              to    TO                    (S(VP*              to     -     -   Monica_Geller          *          -
+/friends-s01e01   0   4            tell    VB                 (VP*)))))            tell     -     -   Monica_Geller          *          -
+/friends-s01e01   0   5               !     .                       *))               !     -     -   Monica_Geller          *          -
 
-    /friends-s01e01   0   0              He   PRP               (TOP(S(NP*)              he     -     -   Monica_Geller          *      (284)
-    /friends-s01e01   0   1              's   VBZ                      (VP*              be     -     -   Monica_Geller          *          -
-    /friends-s01e01   0   2            just    RB                   (ADVP*)            just     -     -   Monica_Geller          *          -
-    /friends-s01e01   0   3            some    DT                   (NP(NP*            some     -     -   Monica_Geller          *          -
-    /friends-s01e01   0   4             guy    NN                        *)             guy     -     -   Monica_Geller          *      (284)
-    /friends-s01e01   0   5               I   PRP              (SBAR(S(NP*)               I     -     -   Monica_Geller          *      (248)
-    /friends-s01e01   0   6            work   VBP                      (VP*            work     -     -   Monica_Geller          *          -
-    /friends-s01e01   0   7            with    IN                (PP*))))))            with     -     -   Monica_Geller          *          -
-    /friends-s01e01   0   8               !     .                       *))               !     -     -   Monica_Geller          *          -"""
+/friends-s01e01   0   0              He   PRP               (TOP(S(NP*)              he     -     -   Monica_Geller          *      (284)
+/friends-s01e01   0   1              's   VBZ                      (VP*              be     -     -   Monica_Geller          *          -
+/friends-s01e01   0   2            just    RB                   (ADVP*)            just     -     -   Monica_Geller          *          -
+/friends-s01e01   0   3            some    DT                   (NP(NP*            some     -     -   Monica_Geller          *          -
+/friends-s01e01   0   4             guy    NN                        *)             guy     -     -   Monica_Geller          *      (284)
+/friends-s01e01   0   5               I   PRP              (SBAR(S(NP*)               I     -     -   Monica_Geller          *      (248)
+/friends-s01e01   0   6            work   VBP                      (VP*            work     -     -   Monica_Geller          *          -
+/friends-s01e01   0   7            with    IN                (PP*))))))            with     -     -   Monica_Geller          *          -
+/friends-s01e01   0   8               !     .                       *))               !     -     -   Monica_Geller          *          -"""
 
     @classmethod
     def setUpClass(cls):
@@ -78,3 +78,12 @@ class TestConllWord(TestCase):
             obj_list = sEcf.translate_file_to_object_list(tf)
 
         self.assertIsNotNone(obj_list)
+
+    def test_object_decomp(self):
+        obj_list = None
+        with open('./testTemp', 'r') as tf:
+            obj_list = sEcf.translate_file_to_object_list(tf)
+
+        speaker_set, decom = sEcf.get_probability_matrix(obj_list)
+        self.assertEqual(len(speaker_set), 1)
+        self.assertIsNotNone(decom.get('Monica_Geller'))
