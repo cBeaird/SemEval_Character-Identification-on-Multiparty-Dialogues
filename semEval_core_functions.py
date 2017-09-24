@@ -67,6 +67,24 @@ def translate_file_to_object_list(data_file):
     return object_list
 
 
+def maybe_better_pm_from_parsed_data(object_list):
+    """
+    work in progress
+    :param object_list:
+    :return:
+    """
+    # todo finish building this out
+    speakers = set()
+    decomposition_dict = dict()
+    for word in object_list:
+        if word.e_id is not sEcm.EMPTY:
+            speakers.add(word.speaker)
+            decomposition_dict[word.speaker] = decomposition_dict.get(word.speaker, CorpusDistributions(word.speaker))
+            decomposition_dict[word.speaker].add_word(word.word, word.e_id)
+
+    return speakers, decomposition_dict
+
+
 def build_basic_probability_matrix(data_file):
     # type: (probability_matrix, speakers, words) -> tuple
     """
@@ -350,3 +368,15 @@ class ConllWord:
         :param pattern: regular expression pattern
         """
         ConllWord.pattern_for_document_id = re.compile(pattern)
+
+
+class CorpusDistributions:
+
+    def __init__(self, speaker, main_character=False):
+        self.speaker = speaker
+        self.words = dict()
+        self.is_main = main_character
+
+    def add_word(self, word, entity):
+        self.words[word] = self.words.get(word, dict())
+        self.words[word][entity] = self.words[word].get(entity, 0) + 1
