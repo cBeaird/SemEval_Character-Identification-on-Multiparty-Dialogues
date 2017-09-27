@@ -1,11 +1,9 @@
+import semEval_core_model as sEcm
+from conllu.parser import parse
 import re
 import sys
-
-import gensim
-from conllu.parser import parse
-
 import semEval_core_functions as sEcf
-import semEval_core_model as sEcm
+import gensim
 
 __author__ = 'Brandon Watts'
 __credits__ = ['Casey Beaird', 'Chase Greco', 'Brandon Watts']
