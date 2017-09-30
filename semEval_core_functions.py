@@ -41,6 +41,25 @@ def build_entity_dict(map_file):
 
     return entity_map
 
+def build_entity_dict_rev(map_file):
+    # type: (entity_map) -> dict
+    """
+    Entity dictionary builder, build the entity dictionary form the command line file or any other file
+    that contains a tab delimited (entity_ID, entity_name) list of entities in the corpora.
+
+    :param map_file: entity map file
+    :rtype: dict
+    :return: dictionary of string names and eids
+    """
+    if not isinstance(map_file, file):
+        raise TypeError
+
+    entity_map = dict()
+    for line in map_file:
+        line_items = line.rstrip().split('\t')
+        entity_map[line_items[1]] = line_items[0]
+
+    return entity_map
 
 def translate_file_to_object_list(data_file):
     # type: (object_list) -> list

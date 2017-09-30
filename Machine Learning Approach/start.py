@@ -12,15 +12,21 @@ __credits__ = ['Casey Beaird', 'Chase Greco', 'Brandon Watts']
 __license__ = 'MIT'
 __version__ = '0.1'
 
+NOT_LISTED_NUMBER = 500
+
 def main():
 
     path_to_data = sys.argv[1] # File path to conll data
+    path_to_entity_file = sys.argv[2] # File path to enitity file
     with open(path_to_data, 'r') as myfile:
         conll_text = myfile.read()
+    entity_file = open(path_to_entity_file,'r')
+    entity2num = sEcf.build_entity_dict_rev(entity_file)
+    num2entity = sEcf.build_entity_dict(entity_file)
+    print entity2num
     data = parseConll(conll_text)
-
     word2vec_model = gensim.models.Word2Vec.load('friends_word2vec_model') # Load the word2vec model
-    featureVectors = createFeatureVectors(data,word2vec_model) # Create our feature vectors
+    featureVectors = createFeatureVectors(data,word2vec_model,entity2num) # Create our feature vectors
     writeCSV(featureVectors) # Write feature vectors to csv file
 
 def parseConll(conll_text):
@@ -47,7 +53,7 @@ def parseConll(conll_text):
 
     return connlWords
 
-def createFeatureVectors(trainingData,word2vec_model):
+def createFeatureVectors(trainingData,word2vec_model,entity2num):
     '''
     Method to create feature vectors from the parsed connl text.
     Feature vectors are in the following format: fv_i = [Season Number, Episode Number, Speaker, The given word's id, Enitity it is reffering to]
@@ -61,8 +67,20 @@ def createFeatureVectors(trainingData,word2vec_model):
     for sentence in trainingData:
         for word in sentence:
             if containsReference(word):
-                feature_vectors.append([word.get_document_id_item(SEASON),word.get_document_id_item(EPISODE), word.speaker, word2vec_model[word.word],word.e_id])
+                feature_vectors.append([word.get_document_id_item(SEASON),word.get_document_id_item(EPISODE), getEntityNumber(entity2num,removeUnderscore(word.speaker)), word2vec_model[word.word],word.e_id])
     return feature_vectors
+
+def getEntityNumber(entity2num, entity):
+    global NOT_LISTED_NUMBER
+    try:
+        entity_num = entity2num[entity]
+    except KeyError:
+        print entity
+        entity_num = NOT_LISTED_NUMBER
+    return entity_num
+
+def removeUnderscore(someString):
+    return someString.replace("_"," ").strip()
 
 def containsReference(word):
     '''
