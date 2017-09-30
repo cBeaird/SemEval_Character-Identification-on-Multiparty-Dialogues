@@ -26,7 +26,7 @@ def main():
     data = parseConll(conll_text)
     word2vec_model = gensim.models.Word2Vec.load('friends_word2vec_model') # Load the word2vec model
     featureVectors = createFeatureVectors(data,word2vec_model,entity2num) # Create our feature vectors
-    writeCSV(featureVectors) # Write feature vectors to csv file
+    writeCSV(featureVectors, 100) # Write feature vectors to csv file TODO: Don't hardcode the model length
 
 def parseConll(conll_text):
     '''
@@ -66,7 +66,12 @@ def createFeatureVectors(trainingData,word2vec_model,entity2num):
     for sentence in trainingData:
         for word in sentence:
             if containsReference(word):
-                feature_vectors.append([word.get_document_id_item(SEASON),word.get_document_id_item(EPISODE), getEntityNumber(entity2num,removeUnderscore(word.speaker)), word2vec_model[word.word],re.sub('[()]','',word.e_id)])
+                feature_vector = [word.get_document_id_item(SEASON), word.get_document_id_item(EPISODE),
+                                  getEntityNumber(entity2num, removeUnderscore(word.speaker))]
+                for feature in word2vec_model[word.word]:
+                    feature_vector.append(feature)
+                feature_vector.append(word.e_id)
+                feature_vectors.append(feature_vector)
     return feature_vectors
 
 def getEntityNumber(entity2num, entity):
@@ -88,7 +93,7 @@ def containsReference(word):
     '''
     return re.match(r'\(\d+\)', word.e_id)
 
-def writeCSV(featureVectors):
+def writeCSV(featureVectors, modelLength):
     '''
     Method to create our csv file so that chase can perform WEKA magic
     :param featureVectors: Array of feature vectors
@@ -96,6 +101,15 @@ def writeCSV(featureVectors):
     csvfile = "weka.csv"
     with open(csvfile, "w") as output:
         writer = csv.writer(output, lineterminator='\n')
+
+        # Build header for top of csv
+        header = ["season_id", "episode_id", "speaker_id"]
+        for x in range(modelLength):
+                header.append("a" + repr(x))
+        header.append("class")
+
+        writer.writerow(header)
+
         writer.writerows(featureVectors)
 
 if __name__ == '__main__':
