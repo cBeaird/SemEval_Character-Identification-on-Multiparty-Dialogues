@@ -23,7 +23,6 @@ def main():
     entity_file = open(path_to_entity_file,'r')
     entity2num = sEcf.build_entity_dict_rev(entity_file)
     num2entity = sEcf.build_entity_dict(entity_file)
-    print entity2num
     data = parseConll(conll_text)
     word2vec_model = gensim.models.Word2Vec.load('friends_word2vec_model') # Load the word2vec model
     featureVectors = createFeatureVectors(data,word2vec_model,entity2num) # Create our feature vectors
@@ -67,7 +66,7 @@ def createFeatureVectors(trainingData,word2vec_model,entity2num):
     for sentence in trainingData:
         for word in sentence:
             if containsReference(word):
-                feature_vectors.append([word.get_document_id_item(SEASON),word.get_document_id_item(EPISODE), getEntityNumber(entity2num,removeUnderscore(word.speaker)), word2vec_model[word.word],word.e_id])
+                feature_vectors.append([word.get_document_id_item(SEASON),word.get_document_id_item(EPISODE), getEntityNumber(entity2num,removeUnderscore(word.speaker)), word2vec_model[word.word],re.sub('[()]','',word.e_id)])
     return feature_vectors
 
 def getEntityNumber(entity2num, entity):
@@ -75,7 +74,6 @@ def getEntityNumber(entity2num, entity):
     try:
         entity_num = entity2num[entity]
     except KeyError:
-        print entity
         entity_num = NOT_LISTED_NUMBER
     return entity_num
 
