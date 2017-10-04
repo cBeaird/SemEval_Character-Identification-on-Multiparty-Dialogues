@@ -22,7 +22,7 @@ def main():
     data = parseConll(conll_text)
 
     word2vec_model = gensim.models.Word2Vec.load('friends_word2vec_model') # Load the word2vec model
-    featureVectors = createFeatureVectors(data,word2vec_model,entity2num) # Create our feature vectors
+    featureVectors = createFeatureVectors(data,word2vec_model) # Create our feature vectors
     writeCSV(featureVectors, 100) # Write feature vectors to csv file TODO: Don't hardcode the model length
 
 def parseConll(conll_text):
@@ -49,7 +49,7 @@ def parseConll(conll_text):
 
     return connlWords
 
-def createFeatureVectors(trainingData,word2vec_model,entity2num):
+def createFeatureVectors(trainingData,word2vec_model):
     '''
     Method to create feature vectors from the parsed connl text.
     Feature vectors are in the following format: fv_i = [Season Number, Episode Number, Speaker, The given word's id, Enitity it is reffering to]
