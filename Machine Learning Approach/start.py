@@ -12,7 +12,7 @@ __credits__ = ['Casey Beaird', 'Chase Greco', 'Brandon Watts']
 __license__ = 'MIT'
 __version__ = '0.1'
 
-NOT_LISTED_NUMBER = 500
+speakers = {}
 
 def main():
 
@@ -22,7 +22,6 @@ def main():
         conll_text = myfile.read()
     entity_file = open(path_to_entity_file,'r')
     entity2num = sEcf.build_entity_dict_rev(entity_file)
-    num2entity = sEcf.build_entity_dict(entity_file)
     data = parseConll(conll_text)
     word2vec_model = gensim.models.Word2Vec.load('friends_word2vec_model') # Load the word2vec model
     featureVectors = createFeatureVectors(data,word2vec_model,entity2num) # Create our feature vectors
@@ -67,23 +66,18 @@ def createFeatureVectors(trainingData,word2vec_model,entity2num):
         for word in sentence:
             if containsReference(word):
                 feature_vector = [word.get_document_id_item(SEASON), word.get_document_id_item(EPISODE),
-                                  getEntityNumber(entity2num, removeUnderscore(word.speaker))]
+                                  getSpeakerNumber(word.speaker)]
                 for feature in word2vec_model[word.word]:
                     feature_vector.append(feature)
                 feature_vector.append(word.e_id)
                 feature_vectors.append(feature_vector)
     return feature_vectors
 
-def getEntityNumber(entity2num, entity):
-    global NOT_LISTED_NUMBER
-    try:
-        entity_num = entity2num[entity]
-    except KeyError:
-        entity_num = NOT_LISTED_NUMBER
-    return entity_num
-
-def removeUnderscore(someString):
-    return someString.replace("_"," ").strip()
+def getSpeakerNumber(entity):
+    global speakers
+    if entity not in speakers:
+        speakers[entity] = len(speakers) + 1
+    return speakers[entity]
 
 def containsReference(word):
     '''
