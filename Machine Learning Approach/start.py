@@ -17,12 +17,10 @@ speakers = {}
 def main():
 
     path_to_data = sys.argv[1] # File path to conll data
-    path_to_entity_file = sys.argv[2] # File path to enitity file
     with open(path_to_data, 'r') as myfile:
         conll_text = myfile.read()
-    entity_file = open(path_to_entity_file,'r')
-    entity2num = sEcf.build_entity_dict_rev(entity_file)
     data = parseConll(conll_text)
+
     word2vec_model = gensim.models.Word2Vec.load('friends_word2vec_model') # Load the word2vec model
     featureVectors = createFeatureVectors(data,word2vec_model,entity2num) # Create our feature vectors
     writeCSV(featureVectors, 100) # Write feature vectors to csv file TODO: Don't hardcode the model length
