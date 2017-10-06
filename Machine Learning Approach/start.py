@@ -68,11 +68,11 @@ def createFeatureVectors(trainingData,word2vec_model):
     for sentence in trainingData:
         for word in sentence:
             if containsReference(word) and re.match(r"\w+",word.word):
-                fv = feature_vector(season_id = word.get_document_id_item(SEASON),
-                                    episode_id = word.get_document_id_item(EPISODE),
-                                    speaker_id = getSpeakerNumber(word.speaker),
+                fv = feature_vector(season_id =  '(' + word.get_document_id_item(SEASON) + ')',
+                                    episode_id = '(' + word.get_document_id_item(EPISODE) + ')',
+                                    speaker_id = '(' + repr(getSpeakerNumber(word.speaker)) + ')',
                                     word_vector = word2vec_model[word.word],
-                                    e_id = re.sub(r"[/)/(]","",word.e_id)
+                                    e_id = word.e_id
                                     )
                 feature_vectors.append(fv.get_vector_representation())
     return feature_vectors
