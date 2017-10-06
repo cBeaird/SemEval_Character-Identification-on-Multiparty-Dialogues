@@ -43,7 +43,7 @@ def parseConll(conll_text):
                             ws=word.get(sEcm.WORD_SENSE, None), speaker=word.get(sEcm.SPEAKER, None),
                             ne=word.get(sEcm.NE, None), e_id=word.get(sEcm.ENTITY_ID, None))
                 connlSentence.append(cwd)
-            except:
+            except ImportError:
                 continue
         connlWords.append(connlSentence)
 
@@ -62,7 +62,7 @@ def createFeatureVectors(trainingData,word2vec_model):
     feature_vectors = []
     for sentence in trainingData:
         for word in sentence:
-            if containsReference(word):
+            if containsReference(word) and re.match(r"\w+",word.word):
                 feature_vector = [word.get_document_id_item(SEASON), word.get_document_id_item(EPISODE),
                                   getSpeakerNumber(word.speaker)]
                 for feature in word2vec_model[word.word]:

@@ -32,7 +32,7 @@ def main():
         text.append(sentence_text)               # Add that sentence to our text list
 
     # Create the word2vec model and save it for later use
-    model = gensim.models.Word2Vec(text, min_count=10, size=100)
+    model = gensim.models.Word2Vec(text, min_count=1)
     model.save('friends_word2vec_model')
 
 def parseConll(conll_text):
