@@ -12,11 +12,12 @@ __credits__ = ['Casey Beaird', 'Chase Greco', 'Brandon Watts']
 __license__ = 'MIT'
 __version__ = '0.1'
 
-speakers = {}
+speakers = {}  # Dictionary of speakers
 
 def main():
 
-    path_to_data = sys.argv[1] # File path to conll data
+    # Open the conll file and parse data from it
+    path_to_data = sys.argv[1]
     with open(path_to_data, 'r') as myfile:
         conll_text = myfile.read()
     data = parseConll(conll_text)
@@ -27,7 +28,10 @@ def main():
 
 def parseConll(conll_text):
     '''
-    Simple method to parse conll file
+    BRANDON WATTS
+    Method to parse the conll data from a conll file
+    :param conll_text: the conll text
+    :return: the connl data in the form of a list of connlWords
     '''
     parsed_text = parse(conll_text, sEcm.DEFAULT_HEADINGS)
     connlWords = []
@@ -51,10 +55,11 @@ def parseConll(conll_text):
 
 def createFeatureVectors(trainingData,word2vec_model):
     '''
+    BRANDON WATTS
     Method to create feature vectors from the parsed connl text.
-    Feature vectors are in the following format: fv_i = [Season Number, Episode Number, Speaker, The given word's id, Enitity it is reffering to]
     where featureVectors = [[fv_1],[fv_2],...,[fv_n]]
     :param trainingData: The parsed connl text
+    :param word2vec_model: The genism word2vec model
     :return: An array of feature vectors
     '''
     SEASON = 1
@@ -73,6 +78,12 @@ def createFeatureVectors(trainingData,word2vec_model):
     return feature_vectors
 
 def getSpeakerNumber(entity):
+    '''
+    BRANDON WATTS
+    Method to get the unique id of a speaker
+    :param entity: The name of the entity
+    :return: Numerical ID of the entity
+    '''
     global speakers
     if entity not in speakers:
         speakers[entity] = len(speakers) + 1
@@ -80,6 +91,7 @@ def getSpeakerNumber(entity):
 
 def containsReference(word):
     '''
+    BRANDON WATTS
     Helper method to check if a word contains a reference
     :param word: connlWord
     :return: Boolean value rather it contains a reference or not
@@ -88,6 +100,7 @@ def containsReference(word):
 
 def writeCSV(featureVectors, modelLength):
     '''
+    BRANDON WATTS
     Method to create our csv file so that chase can perform WEKA magic
     :param featureVectors: Array of feature vectors
     '''
