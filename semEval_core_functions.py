@@ -20,6 +20,8 @@ __credits__ = ['Casey Beaird', 'Chase Greco', 'Brandon Watts']
 __license__ = 'MIT'
 __version__ = '0.1'
 
+MENTION_FINDER = '(?:^[^#])(?:.*)([0-9)]$)'
+
 
 def build_entity_dict(map_file):
     # type: (entity_map) -> dict
@@ -40,6 +42,7 @@ def build_entity_dict(map_file):
         entity_map[line_items[0]] = line_items[1]
 
     return entity_map
+
 
 def translate_file_to_object_list(data_file):
     # type: (object_list) -> list
@@ -237,6 +240,7 @@ def evaluate(data_file):
     """
     if not isinstance(data_file, file):
         raise TypeError
+    mention_matcher = re.compile(MENTION_FINDER)
     data_file.seek(0)
     number = number_correct = 0.0
     answers = list()
@@ -245,14 +249,15 @@ def evaluate(data_file):
         clean_line = line.rstrip()
         if len(clean_line) == 0:
             continue
-        if clean_line[-1] is not sEcm.EMPTY:
+        # if clean_line[-1] is not sEcm.EMPTY:
+        if mention_matcher.match(clean_line) is not None:
             parsed_line = parse(line, sEcm.DEFAULT_HEADINGS)
             if parsed_line[0]:
                 try:
+                    number += 1
                     parsed_word = parsed_line[0][0]
                     c_word = ConllWord(**parsed_word)
                     this_speaker = sEcm.model[sEcm.MODEL_DISTRIBUTIONS].get(c_word.speaker)
-                    number += 1
                     if this_speaker is not None:
                         if c_word.word in this_speaker:
                             t = this_speaker[c_word.word]
@@ -269,7 +274,7 @@ def evaluate(data_file):
                         print('guess')
                 except (KeyError, ImportError):
                     # todo this wont work here we'll need to just guess at random at worst
-                    print('This is an error that will need to be fixed')
+                    print('Key error cannot find item')
                     continue
     print('total: {}, total correct: {}, accuracy: {:2f}'.format(number, number_correct, number_correct/number))
     return answers
