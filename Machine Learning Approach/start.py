@@ -5,7 +5,7 @@ import re
 import sys
 import semEval_core_functions as sEcf
 import gensim
-import numpy
+from feature_vector import feature_vector
 
 __author__ = 'Brandon Watts'
 __credits__ = ['Casey Beaird', 'Chase Greco', 'Brandon Watts']
@@ -63,12 +63,13 @@ def createFeatureVectors(trainingData,word2vec_model):
     for sentence in trainingData:
         for word in sentence:
             if containsReference(word) and re.match(r"\w+",word.word):
-                feature_vector = [word.get_document_id_item(SEASON), word.get_document_id_item(EPISODE),
-                                  getSpeakerNumber(word.speaker)]
-                for feature in word2vec_model[word.word]:
-                    feature_vector.append(feature)
-                feature_vector.append(word.e_id)
-                feature_vectors.append(feature_vector)
+                fv = feature_vector(season_id = word.get_document_id_item(SEASON),
+                                    episode_id = word.get_document_id_item(EPISODE),
+                                    speaker_id = getSpeakerNumber(word.speaker),
+                                    word_vector = word2vec_model[word.word],
+                                    e_id = re.sub(r"[/)/(]","",word.e_id)
+                                    )
+                feature_vectors.append(fv.get_vector_representation())
     return feature_vectors
 
 def getSpeakerNumber(entity):
