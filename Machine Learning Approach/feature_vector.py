@@ -9,6 +9,6 @@ class feature_vector:
         self.e_id = e_id
 
     def get_vector_representation(self):
-        vector = [self.season_id,self.episode_id,self.speaker_id,] + self.word_vector.tolist() + [self.e_id]
+        vector = [self.season_id, self.episode_id, self.speaker_id] + self.word_vector.tolist() + [self.e_id]
         return vector
 
