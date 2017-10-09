@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Add root project directory to PYTHON path environment variable
-export PYTHONPATH=${PYTHONPATH}:..
+export PYTHONPATH=${PYTHONPATH}:.
 
 # Make results directory
 mkdir Results
