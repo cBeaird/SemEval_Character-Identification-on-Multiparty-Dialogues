@@ -15,7 +15,6 @@ import operator
 import semEval_core_model as sEcm
 from conllu.parser import parse
 
-__author__ = 'Casey Beaird'
 __credits__ = ['Casey Beaird', 'Chase Greco', 'Brandon Watts']
 __license__ = 'MIT'
 __version__ = '0.1'
@@ -274,7 +273,7 @@ def evaluate(data_file):
                         print('guess')
                 except (KeyError, ImportError):
                     # todo this wont work here we'll need to just guess at random at worst
-                    print('Key error cannot find item')
+                    print('KeyError')
                     continue
     print('total: {}, total correct: {}, accuracy: {:2f}'.format(number, number_correct, number_correct/number))
     return answers
