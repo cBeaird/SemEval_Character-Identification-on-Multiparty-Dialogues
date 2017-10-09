@@ -7,7 +7,9 @@ import semEval_core_functions as sEcf
 import gensim
 from feature_vector import feature_vector
 
-__author__ = 'Brandon Watts'
+'''
+This class creates the feature vectors and outputs them to the file "weka.csv"
+'''
 __credits__ = ['Casey Beaird', 'Chase Greco', 'Brandon Watts']
 __license__ = 'MIT'
 __version__ = '0.1'
