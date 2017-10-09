@@ -31,11 +31,17 @@ We started by establishing a simple baseline by choosing a speakers most likely 
 
 We used information from the mentions to create custom feature vectors incorporating both lexical and orthographic properties. We tested a variety of machine learning algorithms in WEKA including Naïve Bayes, SVM, and C.45.
 ### Prerequisites
-What things you need to install the software and how to install them
-Weka is installed and the path to Weka has been added to the path
+Python packages conllu and gensim
 ```
 pip install conllu
 pip install gensim
+```
+Weka  
+The latest stable versions of weka are available here https://www.cs.waikato.ac.nz/ml/weka/downloading.html  
+Download latest stable version of weka for your operating system  
+Before attempting to run the project add weka to your java classpath  
+```
+export CLASSPATH=/path/to/weka/weka-3-8-1/weka.jar:$CLASSPATH
 ```
 
 ### Running Example
