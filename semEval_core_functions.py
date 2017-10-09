@@ -15,6 +15,7 @@ import operator
 import semEval_core_model as sEcm
 from conllu.parser import parse
 
+__author__ = 'Casey Beaird'
 __credits__ = ['Casey Beaird', 'Chase Greco', 'Brandon Watts']
 __license__ = 'MIT'
 __version__ = '0.1'
