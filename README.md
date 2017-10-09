@@ -26,7 +26,7 @@ an example of our data is:
 /friends-s01e01 0 7 with IN (PP*)))))) with - - Monica_Geller * - <br />
 /friends-s01e01 0 8 ! . *)) ! - - Monica_Geller * - <br />
 
-### Methods
+## Methods
 We started by establishing a simple baseline by choosing a speakers most likely tag given a word. From the papers we read, this method seemed to be widely regarded as the method of choice, so we thought it would make a nice baseline for our machine learning algorithms.
 
 We used information from the mentions to create custom feature vectors incorporating both lexical and orthographic properties. We tested a variety of machine learning algorithms in WEKA including Naïve Bayes, SVM, and C.45.
