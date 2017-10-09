@@ -76,7 +76,5 @@ java weka.attributeSelection.GainRatioAttributeEval -i weka.arff
 * **Chase Greco** (Weka execution)
 * **Brandon Watts** (Feature extraction)
 
-See also the list of [contributors](https://github.com/cBeaird/SemEval_Character-Identification-on-Multiparty-Dialogues/graphs/contributors) who participated in this project.
-
 ## License
 This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/cBeaird/SemEval_Character-Identification-on-Multiparty-Dialogues/blob/master/LICENSE) file for details
