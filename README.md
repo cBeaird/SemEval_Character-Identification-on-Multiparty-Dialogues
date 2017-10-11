@@ -75,8 +75,8 @@ From this sentence we know we need to identify the following entities being refe
 
 | Word         | Speaker  | Entity |
 |:-------------|:---------|:------:|
-| Mike         | Tom      | Mike   |
-| guy          | Tom      | Mike   |
+| Mike         | Tom      | ?      |
+| guy          | Tom      | ?      |
 
 If we follow through the evaluation algorithm we will retrieve Tom, the speaker, looking to see if we have seen the word Mike. 
 Given that Mike is in our list we will simply find the entity that satisfies the _argmax(s, w)_ function and return that answer. 
