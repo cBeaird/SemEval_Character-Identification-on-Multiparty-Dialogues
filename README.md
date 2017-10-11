@@ -42,19 +42,13 @@ reference, and the word the speaker uses to reference the entity. In our case we
     {sentence: Mike said he likes boating, speaker: Tom, reference: Mike}
 when we parse this sentence out into the conll format we get:
 
-| Tables        | Are           | Cool  |
-| ------------- |:-------------:| -----:|
-| col 3 is      | right-aligned | $1600 |
-| col 2 is      | centered      |   $12 |
-| zebra stripes | are neat      |    $1 |
-
-Word | Speaker | Entity
-
-Mike | Tom | Mike    
-    said          Tom        -
-    he            Tom        Mike
-    likes          Tom        -
-    boating     Tom        -
+| Word          | Speaker  | Entity |
+|:------------- |:---------|:------:|
+| Mike          | Tom      | Mike   |
+| said          | Tom      | -      |
+| he            | Tom      | Mike   |
+| likes         | Tom      | -      |
+| boating       | Tom      | -      |
 
 Given we are not interested in the relationships between words and are only interested in identifying the referred 
 entity we can reduce our data to:  
