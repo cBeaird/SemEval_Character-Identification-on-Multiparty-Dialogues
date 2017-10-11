@@ -32,6 +32,7 @@ an example of our data is:
 /friends-s01e01 0 8 ! . *)) ! - - Monica_Geller * - <br />
 
 ## Methods
+
 ###BaseLine Method
 The most likely tag baseline is a fairly simple and straight forward method to determine the entity being referenced. 
 When we look at more complicated models we see that we might want to encode the corpus tokens to better understand the 
