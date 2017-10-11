@@ -1,5 +1,10 @@
 # SemEval2018: Task 4 Character Identification on Multiparty Dialogues
-Entity linking task that identifies each mention as a certain character in multiparty dialogue using cross- document entity resolution.
+
+## Introduction
+Character identification is the task of linking mentions within a dialog to the characters that they reference.  Mentions are in the form of words referencing a person (eg. _he_, _Dad_, _Joey_) which then must be linked to an "entity" or character within the dialog.  What can make this task challenging is that the entity which a mention references may not be a direct participant of the dialog, meaning that information regarding references must be stored and cataloged across multiple dialogs. This task has several applications as part of a larger NLP pipeline such as building a question answering system or text summarization. The SemEval 2018 Task 4: Character Identification on Multiparty Dialogues focuses on this task and is the objective of our work. The task is presented as identifying mentions of characters within the scripts of the first two seasons of the popular television show "Friends".  The scripts have been provided pre-annotated in Conll format as part of the materials for the task.  The objective then, is to devise a system that can correctly identify mentions of not only the main characters of the show, but any and all characters which make appearances.  For example, given the piece of dialog "See! He's her lobster!", the goal is to correctly match the two references "he" and "she" to the corresponding characters that they refer to, in this case Ross Geller and Rachel.  When evaluating the system, special emphasis is place on accuracy and F-1 measures on the main characters as the system will be examined across all entities, as well as across the main characters specifically.  
+
+Our motivation behind our approach to this task was to first begin with a simple probabilistic model which would select the most likely entity a mention refers to based solely on the character speaking the line of dialog and the mention word they used.  We then use this model as a baseline with which we compare against more sophisticated machine learning approaches, where much of the focus of contemporary research lies. Finally, based on our preliminary results, we propose utilizing neural networks as a possible method to achieve higher performance than previously attempted approaches.
+
 
 ## Getting Started
 The general idea behind this task is to identify the entity being referred to by a speaker. For example we'll take the sentence "See! He's her lobster!" we have here two references that need to be resolved {he's, her} in this case if we look at the final slide on presentation we have the visual context clues for resolving these mentions. In this case He's is referring to Ross Geller and her to Rachel.
@@ -31,7 +36,7 @@ We started by establishing a simple baseline by choosing a speakers most likely 
 
 We used information from the mentions to create custom feature vectors incorporating both lexical and orthographic properties. We tested a variety of machine learning algorithms in WEKA including Naïve Bayes, SVM, and C.45.
 ### Prerequisites
-#### Python 
+#### Python 2.7
 packages conllu and gensim
 ```
 pip install conllu
@@ -64,7 +69,6 @@ java -Xmx6g weka.classifiers.functions.SMO -C 1.0 -L 0.001 -P 1.0E-12 -N 0 -V -1
 java weka.attributeSelection.GainRatioAttributeEval -i weka.arff
 ```
 
-
 ## Built With
 * [Python](https://www.python.org/)
 * [Genism](https://radimrehurek.com/gensim/)
@@ -72,9 +76,9 @@ java weka.attributeSelection.GainRatioAttributeEval -i weka.arff
 * [Weka](https://www.cs.waikato.ac.nz/ml/weka/)
 
 ## Authors
-* **Casey Beaird** (Baseline implementation)
-* **Chase Greco** (Weka execution)
-* **Brandon Watts** (Feature extraction)
+* **Casey Beaird** Construction of basic Python framework for the intial parsing of data and training of the simple probablistic model
+* **Chase Greco** Team coordination and development of machine learing models in Weka
+* **Brandon Watts** Development of additional data parsing methods, exctracting of base features into feature vectors, and feature vector manipulation in Word2Vec
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/cBeaird/SemEval_Character-Identification-on-Multiparty-Dialogues/blob/master/LICENSE) file for details
