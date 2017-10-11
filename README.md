@@ -32,8 +32,51 @@ an example of our data is:
 /friends-s01e01 0 8 ! . *)) ! - - Monica_Geller * - <br />
 
 ## Methods
-We started by establishing a simple baseline by choosing a speakers most likely tag given a word. From the papers we read, this method seemed to be widely regarded as the method of choice, so we thought it would make a nice baseline for our machine learning algorithms.
+###BaseLine Method
+The most likely tag baseline is a fairly simple and straight forward method to determine the entity being referenced. 
+When we look at more complicated models we see that we might want to encode the corpus tokens to better understand the 
+relationship between words. Additionally we might look at modeling the relationship between the speakers. However, with 
+the most likely reference baseline these tasks are unnecessary. Simply we need to capture the speaker making the 
+reference, and the word the speaker uses to reference the entity. In our case we can look and at the simplified example: 
 
+    {sentence: Mike said he likes boating, speaker: Tom, reference: Mike}
+when we parse this sentence out into the conll format we get:
+
+    Mike         Tom        Mike    
+    said          Tom        -
+    he            Tom        Mike
+    likes          Tom        -
+    boating     Tom        -
+
+Given we are not interested in the relationships between words and are only interested in identifying the referred 
+entity we can reduce our data to:  
+
+    Mike        Tom     Mike
+    he           Tom     Mike
+
+We develop a simple algorithm to capture these references, words and speakers into a dictionary. 
+This dictionary is comprised of a speaker, followed by a dictionary of words the speaker used to refer to an entity, 
+and finally a dictionary to count the number of times the speaker used word w to refer to entity e. This looks like: 
+
+    {Tom: {Mike: {Mike, 1}, he: {Mike, 1}}}
+
+Once this information has been extracted from the training data we simply evaluate by lookup. We find a reference 
+that needs to be tagged. We read the dictionary of speakers to find the correct speaker; further read that speakers 
+word list for the word used to reference the entity and find the entity with the highest count. To follow our example 
+we come across the sentence: 
+
+    {sentence: Mike is a really nice guy, speaker: Tom, reference: Mike}
+From this sentence we know we need to identify the following entities being referred to.
+
+    Mike        Tom     ?
+    guy         Tom     ?
+
+If we follow through the evaluation algorithm we will retrieve Tom, the speaker, looking to see if we have seen the word Mike. 
+Given that Mike is in our list we will simply find the entity that satisfies the _argmax(s, w)_ function and return that answer. 
+In this case we will return Mike and be correct. The process is repeated for the word guy which we have not seen before so 
+we will simply guess the answer from the entities provided.
+
+ 
 We used information from the mentions to create custom feature vectors incorporating both lexical and orthographic properties. We tested a variety of machine learning algorithms in WEKA including Naïve Bayes, SVM, and C.45.
 ### Prerequisites
 #### Python 2.7
