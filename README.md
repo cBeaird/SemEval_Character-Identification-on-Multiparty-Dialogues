@@ -42,21 +42,21 @@ reference, and the word the speaker uses to reference the entity. In our case we
     {sentence: Mike said he likes boating, speaker: Tom, reference: Mike}
 when we parse this sentence out into the conll format we get:
 
-| Word          | Speaker  | Entity |
-|:------------- |:---------|:------:|
-| Mike          | Tom      | Mike   |
-| said          | Tom      | -      |
-| he            | Tom      | Mike   |
-| likes         | Tom      | -      |
-| boating       | Tom      | -      |
+| Word         | Speaker  | Entity |
+|:-------------|:---------|:------:|
+| Mike         | Tom      | Mike   |
+| said         | Tom      | -      |
+| he           | Tom      | Mike   |
+| likes        | Tom      | -      |
+| boating      | Tom      | -      |
 
 Given we are not interested in the relationships between words and are only interested in identifying the referred 
 entity we can reduce our data to:  
 
-| Word          | Speaker  | Entity |
-|:------------- |:---------|:------:|
-| Mike          | Tom      | Mike   |
-| he            | Tom      | Mike   |
+| Word         | Speaker  | Entity |
+|:-------------|:---------|:------:|
+| Mike         | Tom      | Mike   |
+| he           | Tom      | Mike   |
 
 We develop a simple algorithm to capture these references, words and speakers into a dictionary. 
 This dictionary is comprised of a speaker, followed by a dictionary of words the speaker used to refer to an entity, 
