@@ -53,8 +53,10 @@ when we parse this sentence out into the conll format we get:
 Given we are not interested in the relationships between words and are only interested in identifying the referred 
 entity we can reduce our data to:  
 
-    Mike        Tom     Mike
-    he           Tom     Mike
+| Word          | Speaker  | Entity |
+|:------------- |:---------|:------:|
+| Mike          | Tom      | Mike   |
+| he            | Tom      | Mike   |
 
 We develop a simple algorithm to capture these references, words and speakers into a dictionary. 
 This dictionary is comprised of a speaker, followed by a dictionary of words the speaker used to refer to an entity, 
@@ -70,8 +72,10 @@ we come across the sentence:
     {sentence: Mike is a really nice guy, speaker: Tom, reference: Mike}
 From this sentence we know we need to identify the following entities being referred to.
 
-    Mike        Tom     ?
-    guy         Tom     ?
+| Word         | Speaker  | Entity |
+|:-------------|:---------|:------:|
+| Mike         | Tom      | Mike   |
+| guy          | Tom      | Mike   |
 
 If we follow through the evaluation algorithm we will retrieve Tom, the speaker, looking to see if we have seen the word Mike. 
 Given that Mike is in our list we will simply find the entity that satisfies the _argmax(s, w)_ function and return that answer. 
