@@ -1,15 +1,37 @@
 # SemEval2018: Task 4 Character Identification on Multiparty Dialogues
 
 ## Introduction
-Character identification is the task of linking mentions within a dialog to the characters that they reference.  Mentions are in the form of words referencing a person (eg. _he_, _Dad_, _Joey_) which then must be linked to an "entity" or character within the dialog.  What can make this task challenging is that the entity which a mention references may not be a direct participant of the dialog, meaning that information regarding references must be stored and cataloged across multiple dialogs. This task has several applications as part of a larger NLP pipeline such as building a question answering system or text summarization. The SemEval 2018 Task 4: Character Identification on Multiparty Dialogues focuses on this task and is the objective of our work. The task is presented as identifying mentions of characters within the scripts of the first two seasons of the popular television show "Friends".  The scripts have been provided pre-annotated in Conll format as part of the materials for the task.  The objective then, is to devise a system that can correctly identify mentions of not only the main characters of the show, but any and all characters which make appearances.  For example, given the piece of dialog "See! He's her lobster!", the goal is to correctly match the two references "he" and "she" to the corresponding characters that they refer to, in this case Ross Geller and Rachel.  When evaluating the system, special emphasis is place on accuracy and F-1 measures on the main characters as the system will be examined across all entities, as well as across the main characters specifically.  
+Character identification is the task of linking mentions within a dialog to the characters that they reference. 
+Mentions are in the form of words referencing a person (eg. _he_, _Dad_, _Joey_) which then must be linked to an 
+"entity" or character within the dialog.What can make this task challenging is that the entity which a mention 
+references may not be a direct participant of the dialog, meaning that information regarding references must be stored 
+and cataloged across multiple dialogs. This task has several applications as part of a larger NLP pipeline such as 
+building a question answering system or text summarization. The SemEval 2018 Task 4: _Character Identification on 
+Multiparty Dialogues_ focuses on this task and is the objective of our work. The task is presented as identifying 
+mentions of characters within the scripts of the first two seasons of the popular television show "Friends".
+The scripts have been provided pre-annotated in Conll format as part of the materials for the task.
+The objective then, is to devise a system that can correctly identify mentions of not only the main characters of the 
+show, but any and all characters which make appearances.  For example, given the piece of dialog "See! He's her 
+lobster!", the goal is to correctly match the two references "he" and "she" to the corresponding characters that they 
+refer to, in this case Ross Geller and Rachel.  When evaluating the system, special emphasis is place on accuracy and 
+F-1 measures on the main characters as the system will be examined across all entities, as well as across the main 
+characters specifically.  
 
-Our motivation behind our approach to this task was to first begin with a simple probabilistic model which would select the most likely entity a mention refers to based solely on the character speaking the line of dialog and the mention word they used.  We then use this model as a baseline with which we compare against more sophisticated machine learning approaches, where much of the focus of contemporary research lies. Finally, based on our preliminary results, we propose utilizing neural networks as a possible method to achieve higher performance than previously attempted approaches.
+Our motivation behind our approach to this task was to first begin with a simple probabilistic model which would select 
+the most likely entity a mention refers to based solely on the character speaking the line of dialog and the mention 
+word they used.  We then use this model as a baseline with which we compare against more sophisticated machine learning 
+approaches, where much of the focus of contemporary research lies. Finally, based on our preliminary results, we propose 
+utilizing neural networks as a possible method to achieve higher performance than previously attempted approaches.
 
 
 ## Getting Started
-The general idea behind this task is to identify the entity being referred to by a speaker. For example we'll take the sentence "See! He's her lobster!" we have here two references that need to be resolved {he's, her} in this case if we look at the final slide on presentation we have the visual context clues for resolving these mentions. In this case He's is referring to Ross Geller and her to Rachel.
+The general idea behind this task is to identify the entity being referred to by a speaker. For example we'll take the 
+sentence "See! He's her lobster!" we have here two references that need to be resolved {he's, her} in this case if we 
+look at the final slide on presentation we have the visual context clues for resolving these mentions. In this case He's 
+is referring to Ross Geller and her to Rachel.
 
-This data for the SemEval task is provided in the Conll format which is tab or space delimited data. The column order for the data is specified to the parser. 
+This data for the SemEval task is provided in the Conll format which is tab or space delimited data. The column order 
+for the data is specified to the parser. 
 
 an example of our data is: 
 
@@ -78,16 +100,28 @@ From this sentence we know we need to identify the following entities being refe
 | Mike         | Tom      | ?      |
 | guy          | Tom      | ?      |
 
-If we follow through the evaluation algorithm we will retrieve Tom, the speaker, looking to see if we have seen the word Mike. 
-Given that Mike is in our list we will simply find the entity that satisfies the _argmax(s, w)_ function and return that answer. 
-In this case we will return Mike and be correct. The process is repeated for the word guy which we have not seen before so 
-we will simply guess the answer from the entities provided.
+If we follow through the evaluation algorithm we will retrieve Tom, the speaker, looking to see if we have seen the word 
+Mike. 
+Given that Mike is in our list we will simply find the entity that satisfies the highest probability given the speaker 
+and the word, then return that answer. 
+In this case we will return Mike and be correct. The process is repeated for the word guy which we have not seen before 
+so we will simply guess the answer from the entities provided.
 
- 
-We used information from the mentions to create custom feature vectors incorporating both lexical and orthographic properties. We tested a variety of machine learning algorithms in WEKA including Naïve Bayes, SVM, and C.45.
+###Machine Learning Approach
+We then explored machine learning approaches to compare against our most likely tag baseline.  To begin we trained a
+_Word2Vec_ model by...  
+**ELABORATE Word2Vec Here**  
+   * Training of initial model with skip gram
+   * Construction of feature vectors
+
+We then examined the performance of three machine learning algorithms, Naïve Bayes, SVM, and C.45, utilizing these 
+feature vectors.  The run configurations of each algorithm can be seen in the "Running Example" section below.  To 
+evaluate the performance we compared the accuracies of each algorithm when trained and tested on the entire training set
+and when utilizing 10 fold cross-validation against the accuracy of our most likely tag baseline. 
+
 ### Prerequisites
 #### Python 2.7
-packages conllu and gensim
+packages `conllu` and `gensim`
 ```
 pip install conllu
 pip install gensim
@@ -126,7 +160,7 @@ java weka.attributeSelection.GainRatioAttributeEval -i weka.arff
 * [Weka](https://www.cs.waikato.ac.nz/ml/weka/)
 
 ## Authors
-* **Casey Beaird** Construction of basic Python framework for the intial parsing of data and training of the simple probablistic model
+* **Casey Beaird** Construction of basic Python framework for the intial parsing of data and training of the simple probabilistic model
 * **Chase Greco** Team coordination and development of machine learing models in Weka
 * **Brandon Watts** Development of additional data parsing methods, exctracting of base features into feature vectors, and feature vector manipulation in Word2Vec
 
