@@ -108,11 +108,7 @@ In this case we will return Mike and be correct. The process is repeated for the
 so we will simply guess the answer from the entities provided.
 
 ### Machine Learning Approach
-We then explored machine learning approaches to compare against our most likely tag baseline.  To begin we trained a
-_Word2Vec_ model by...  
-**ELABORATE Word2Vec Here**  
-   * Training of initial model with skip gram
-   * Construction of feature vectors
+We then explored machine learning approaches to compare against our most likely tag baseline. To begin we use gensim to map  the mentions to vectors using a skip-gram model and the training data provided as the corpora. We added additional orthographic features to our word2vec vector in an attempt to combine lexical and orthographic information. Feature Vectors have the following structure: [Season, Episode, Scene ID, Speaker, Word2Vec Representation, Entity ID].
 
 We then examined the performance of three machine learning algorithms, Naïve Bayes, SVM, and C.45, utilizing these 
 feature vectors.  The run configurations of each algorithm can be seen in the "Running Example" section below.  To 
