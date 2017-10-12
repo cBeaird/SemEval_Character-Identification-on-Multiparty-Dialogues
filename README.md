@@ -3,7 +3,7 @@
 ## Introduction
 Character identification is the task of linking mentions within a dialog to the characters that they reference. 
 Mentions are in the form of words referencing a person (eg. _he_, _Dad_, _Joey_) which then must be linked to an 
-"entity" or character within the dialog.What can make this task challenging is that the entity which a mention 
+"entity" or character within the dialog. What can make this task challenging is that the entity which a mention 
 references may not be a direct participant of the dialog, meaning that information regarding references must be stored 
 and cataloged across multiple dialogs. This task has several applications as part of a larger NLP pipeline such as 
 building a question answering system or text summarization. The SemEval 2018 Task 4: _Character Identification on 
