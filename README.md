@@ -107,7 +107,7 @@ and the word, then return that answer.
 In this case we will return Mike and be correct. The process is repeated for the word guy which we have not seen before 
 so we will simply guess the answer from the entities provided.
 
-###Machine Learning Approach
+### Machine Learning Approach
 We then explored machine learning approaches to compare against our most likely tag baseline.  To begin we trained a
 _Word2Vec_ model by...  
 **ELABORATE Word2Vec Here**  
