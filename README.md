@@ -13,7 +13,7 @@ The scripts have been provided pre-annotated in Conll format as part of the mate
 The objective then, is to devise a system that can correctly identify mentions of not only the main characters of the 
 show, but any and all characters which make appearances.  For example, given the piece of dialog "See! He's her 
 lobster!", the goal is to correctly match the two references "he" and "she" to the corresponding characters that they 
-refer to, in this case Ross Geller and Rachel.  When evaluating the system, special emphasis is place on accuracy and 
+refer to, in this case Ross Geller and Rachel.  When evaluating the system, special emphasis is placed on accuracy and 
 F-1 measures on the main characters as the system will be examined across all entities, as well as across the main 
 characters specifically.  
 
