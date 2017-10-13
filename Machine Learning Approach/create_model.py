@@ -1,64 +1,34 @@
 import semEval_core_model as sEcm
-from conllu.parser import parse
-import re
 import sys
 import semEval_core_functions as sEcf
 import gensim
+import numpy as np
 
-'''
-This class is used to create the word2vec model called "friends_word2vec_model".
-'''
 __credits__ = ['Casey Beaird', 'Chase Greco', 'Brandon Watts']
 __license__ = 'MIT'
 __version__ = '0.1'
 
-def main():
-    '''
-    Simple script to create a word2vec model from the supplied input as a conll file
-    '''
+def openFile(filepath):
+    with open(filepath, 'r') as conll_file:
+        conll_file_text = conll_file.read()
+    return conll_file_text
 
-    text = [] # Holds the text in the format that gensim wants
-    path_to_data = sys.argv[1] # location of the conll file
+path_to_data = sys.argv[1]                                            # Location of the Conll File
+conll_file = openFile(path_to_data)
+df = sEcf.conll_2_dataframe(conll_file)                               # Put Conll File into a pandas dataframe
+df = df[['Word']]                                                     # Delete every column besides the words
+df['Word'] = df['Word'].str.replace(r'^[\.\?]|!{1,2}|\?!$', '<END>')  # Replace the end of sentences with the <END> tag
+df = df.replace(r'[,\'-\*]|\.+', np.nan, regex=True)                  # Replace all the junk with NaN
+df = df.dropna()                                                      # Drop all of the junk
 
-    with open(path_to_data, 'r') as conllFile:
-        conll_text = conllFile.read()
-    parsed_conll = parseConll(conll_text)
-
-    # Loop over the conll file and place in in the following format:
-    # [[sentence1,sentence1,...],[sentence2,sentence2,...],..]
-    for sentence in parsed_conll:
+text = []                           # List that will hold the format gensim needs
+sentence_text = []                  # Temporary list to hold words in a sentence
+for word in df['Word']:             # Loop through all the words
+    if word == "<END>":             # If it is an <END> Tag add the sentence to the text and start another sentence
+        text.append(sentence_text)
         sentence_text = []
-        for word in sentence:
-            if re.match('\'?\w+', word.word):    # If the item we are looking at is a word
-                sentence_text.append(word.word)  # Put it in a sentence
-        text.append(sentence_text)               # Add that sentence to our text list
+    else:                           # If it is not the end of the sentence keep adding words to sentence text
+        sentence_text.append(word)
 
-    # Create the word2vec model and save it for later use
-    model = gensim.models.Word2Vec(text, min_count=1)
-    model.save('friends_word2vec_model')
-
-def parseConll(conll_text):
-    '''
-    Simple method to parse conll file
-    '''
-    parsed_text = parse(conll_text, sEcm.DEFAULT_HEADINGS)
-    connlWords = []
-    for sentence in parsed_text:
-        connlSentence = []
-        for word in sentence:
-            try:
-                sEcf.ConllWord.define_doc_contents('(?:\/.*-s)([0-9]*)(?:[a-z])([0-9]*)')
-                cwd = sEcf.ConllWord(doc_id=word.get(sEcm.DOCUMENT_ID, None), scene_id=word.get(sEcm.SCENE_ID, None),
-                                     token_id=word.get(sEcm.TOKEN_ID, None), word=word.get(sEcm.WORD, None).lower(),
-                                     pos=word.get(sEcm.POS, None), constituency=word.get(sEcm.CONSTITUENCY, None),
-                                     lemma=word.get(sEcm.LEMMA, None), frame_id=word.get(sEcm.FRAMESET_ID, None),
-                                     ws=word.get(sEcm.WORD_SENSE, None), speaker=word.get(sEcm.SPEAKER, None),
-                                     ne=word.get(sEcm.NE, None), e_id=word.get(sEcm.ENTITY_ID, None))
-                connlSentence.append(cwd)
-            except ImportError:
-                continue
-        connlWords.append(connlSentence)
-    return connlWords
-
-if __name__ == '__main__':
-    main()
+model = gensim.models.Word2Vec(text, min_count=1)
+model.save('friends_word2vec_model')

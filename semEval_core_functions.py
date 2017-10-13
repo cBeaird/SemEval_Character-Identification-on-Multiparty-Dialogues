@@ -14,6 +14,7 @@ import re
 import operator
 import semEval_core_model as sEcm
 from conllu.parser import parse
+import pandas as pd
 
 __author__ = 'Casey Beaird'
 __credits__ = ['Casey Beaird', 'Chase Greco', 'Brandon Watts']
@@ -204,6 +205,53 @@ def update_speakers(speakers):
     else:
         sEcm.model[sEcm.MODEL_SPEAKERS] = speakers
 
+def conll_2_dataframe(conll_text):
+    '''
+    BRANDON WATTS
+    Method to turn a conll file to a pandas dataframe
+    :param conll_text: the conll text
+    :return: the connl data in the form of a list of connlWords
+    '''
+    parsed_text = parse(conll_text, sEcm.DEFAULT_HEADINGS)
+    doc_ids = []
+    scene_ids = []
+    token_ids = []
+    words = []
+    posTags = []
+    posTags_expanded = []
+    lemmatizedWords = []
+    frameSetIDs = []
+    wordSenses = []
+    speakers = []
+    namedEntities = []
+    entityIDs = []
+
+    for sentence in parsed_text:
+        for word in sentence:
+            doc_ids.append(word.get(sEcm.DOCUMENT_ID, None))
+            scene_ids.append(word.get(sEcm.SCENE_ID, None))
+            token_ids.append(word.get(sEcm.TOKEN_ID, None))
+            words.append(word.get(sEcm.WORD, None).lower())
+            posTags.append(word.get(sEcm.POS,None))
+            posTags_expanded.append(word.get(sEcm.CONSTITUENCY,None))
+            lemmatizedWords.append(word.get(sEcm.LEMMA,None))
+            frameSetIDs.append(word.get(sEcm.FRAMESET_ID,None))
+            wordSenses.append(word.get(sEcm.WORD_SENSE,None))
+            speakers.append(word.get(sEcm.SPEAKER,None))
+            namedEntities.append(word.get(sEcm.NE,None))
+            entityIDs.append(word.get(sEcm.ENTITY_ID,None))
+
+    df = pd.DataFrame.from_dict({'Document ID': doc_ids, 'Scene ID': scene_ids, "Token ID": token_ids,
+            "Word": words, "POS Tag": posTags, "POS Tag Expanded": posTags_expanded,
+            "Lemma": lemmatizedWords,"Frameset ID": frameSetIDs, "Word Sense": wordSenses,
+            "Speaker": speakers, "Named Entity": namedEntities, "Entity ID": entityIDs})
+
+    df["Document ID"] = df["Document ID"].str.replace(r'\/friends-s(\d+)e(\d+)',r'\1,\2')  # Extract the Season and episode data from "Document ID" and place it in format: season,episode
+    extracted_doc_data = df["Document ID"].apply(lambda x: x.split(','))  # Split the previous format by comma
+    df['Season'] = extracted_doc_data.apply(lambda x: x[0])  # Place the Season into its own column
+    df['Episode'] = extracted_doc_data.apply(lambda x: x[1])  # Place the Episode into its own columnToken ID", "Word Sense", "Lemma",
+
+    return df
 
 def update_words(words):
     """
