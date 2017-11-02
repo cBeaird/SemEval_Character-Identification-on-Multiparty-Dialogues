@@ -30,7 +30,7 @@ train_input_fn = tf.estimator.inputs.pandas_input_fn(
     x=training_set,
     y=labels,
     batch_size=100,
-    num_epochs=100,
+    num_epochs=None,
     shuffle=True)
 
 dnn_clf.train(input_fn=train_input_fn, steps=2000)
@@ -44,7 +44,7 @@ test_input_fn = tf.estimator.inputs.pandas_input_fn(
     x=testing_set,
     y=labels,
     num_epochs=1,
-    shuffle=True
+    shuffle=False
 )
 
 accuracy_score = dnn_clf.evaluate(input_fn=test_input_fn)["accuracy"]
