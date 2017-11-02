@@ -21,5 +21,5 @@ setup(
     author='Casey, Chase, Brandon',
     author_email='',
     description='SemEval project Task 4: Conference Resolution',
-    install_requires=['conllu','gensim','pandas']
+    install_requires=['conllu', 'gensim', 'pandas', 'numpy', 'tensorflow', 'sklearn']
 )

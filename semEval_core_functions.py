@@ -354,10 +354,10 @@ def train_nn_model(data_file):
         if content[0]:
             try:
                 word = ConllWord(**content[0][0])  # create word object
-                word_dict[word.word] = word_dict.get(word.word, float(len(word_dict) + 1))
-                word_dict[word.lemma] = word_dict.get(word.lemma, float(len(word_dict) + 1))
-                speaker_dict[word.speaker] = speaker_dict.get(word.speaker, float(len(speaker_dict) + 1))
-                pos_tag_dict[word.pos] = pos_tag_dict.get(word.pos, float(len(pos_tag_dict) + 1))
+                word_dict[word.word] = word_dict.get(word.word, len(word_dict) + 1)
+                word_dict[word.lemma] = word_dict.get(word.lemma, len(word_dict) + 1)
+                speaker_dict[word.speaker] = speaker_dict.get(word.speaker, len(speaker_dict) + 1)
+                pos_tag_dict[word.pos] = pos_tag_dict.get(word.pos, len(pos_tag_dict) + 1)
 
                 if word.is_reference():
                     instance_list.append([word.get_document_id_item(1), word.get_document_id_item(2),
