@@ -64,3 +64,5 @@ updater_functions = {MODEL_ENTITY_MAP: semEval_core_functions.update_entities,
                      MODEL_SPEAKERS: semEval_core_functions.update_speakers,
                      MODEL_WORDS: semEval_core_functions.update_words,
                      MODEL_DISTRIBUTIONS: semEval_core_functions.update_dist_counts}
+
+nn_model = None

@@ -205,6 +205,7 @@ def update_speakers(speakers):
     else:
         sEcm.model[sEcm.MODEL_SPEAKERS] = speakers
 
+
 def conll_2_dataframe(conll_text):
     '''
     BRANDON WATTS
@@ -232,26 +233,29 @@ def conll_2_dataframe(conll_text):
             scene_ids.append(word.get(sEcm.SCENE_ID, None))
             token_ids.append(word.get(sEcm.TOKEN_ID, None))
             words.append(word.get(sEcm.WORD, None).lower())
-            posTags.append(word.get(sEcm.POS,None))
-            posTags_expanded.append(word.get(sEcm.CONSTITUENCY,None))
-            lemmatizedWords.append(word.get(sEcm.LEMMA,None))
-            frameSetIDs.append(word.get(sEcm.FRAMESET_ID,None))
-            wordSenses.append(word.get(sEcm.WORD_SENSE,None))
-            speakers.append(word.get(sEcm.SPEAKER,None))
-            namedEntities.append(word.get(sEcm.NE,None))
-            entityIDs.append(word.get(sEcm.ENTITY_ID,None))
+            posTags.append(word.get(sEcm.POS, None))
+            posTags_expanded.append(word.get(sEcm.CONSTITUENCY, None))
+            lemmatizedWords.append(word.get(sEcm.LEMMA, None))
+            frameSetIDs.append(word.get(sEcm.FRAMESET_ID, None))
+            wordSenses.append(word.get(sEcm.WORD_SENSE, None))
+            speakers.append(word.get(sEcm.SPEAKER, None))
+            namedEntities.append(word.get(sEcm.NE, None))
+            entityIDs.append(word.get(sEcm.ENTITY_ID, None))
 
     df = pd.DataFrame.from_dict({'Document ID': doc_ids, 'Scene ID': scene_ids, "Token ID": token_ids,
-            "Word": words, "POS Tag": posTags, "POS Tag Expanded": posTags_expanded,
-            "Lemma": lemmatizedWords,"Frameset ID": frameSetIDs, "Word Sense": wordSenses,
-            "Speaker": speakers, "Named Entity": namedEntities, "Entity ID": entityIDs})
-
-    df["Document ID"] = df["Document ID"].str.replace(r'\/friends-s(\d+)e(\d+)',r'\1,\2')  # Extract the Season and episode data from "Document ID" and place it in format: season,episode
+                                 "Word": words, "POS Tag": posTags, "POS Tag Expanded": posTags_expanded,
+                                 "Lemma": lemmatizedWords, "Frameset ID": frameSetIDs, "Word Sense": wordSenses,
+                                 "Speaker": speakers, "Named Entity": namedEntities, "Entity ID": entityIDs})
+    # Extract the Season and episode data from "Document ID" and place it in format: season,episode
+    df["Document ID"] = df["Document ID"].str.replace(r'\/friends-s(\d+)e(\d+)',
+                                                      r'\1,\2')
     extracted_doc_data = df["Document ID"].apply(lambda x: x.split(','))  # Split the previous format by comma
     df['Season'] = extracted_doc_data.apply(lambda x: x[0])  # Place the Season into its own column
-    df['Episode'] = extracted_doc_data.apply(lambda x: x[1])  # Place the Episode into its own columnToken ID", "Word Sense", "Lemma",
+    df['Episode'] = extracted_doc_data.apply(
+        lambda x: x[1])  # Place the Episode into its own columnToken ID", "Word Sense", "Lemma",
 
     return df
+
 
 def update_words(words):
     """
@@ -324,12 +328,68 @@ def evaluate(data_file):
                     # todo this wont work here we'll need to just guess at random at worst
                     print('KeyError')
                     continue
-    print('total: {}, total correct: {}, accuracy: {:2f}'.format(number, number_correct, number_correct/number))
+    print('total: {}, total correct: {}, accuracy: {:2f}'.format(number, number_correct, number_correct / number))
     return answers
+
+
+''' Neural Network model functions beginning 
+############################################
+'''
+
+
+def train_nn_model(data_file):
+    feature_header = ['season', 'episode', 'word', 'pos', 'lemma', 'speaker', 'class']
+    word_dict = dict()
+    speaker_dict = dict()
+    pos_tag_dict = dict()
+    instance_list = list()
+    regex = re.compile(r'[\t ]+')
+    ConllWord.define_doc_contents('(?:\/.*-s)([0-9]*)(?:[a-z])([0-9]*)')
+    instance_list.append(feature_header)
+
+    for line in data_file:
+        new_line = regex.sub('\t', line.lower())
+        content = parse(new_line, sEcm.DEFAULT_HEADINGS)
+
+        if content[0]:
+            try:
+                word = ConllWord(**content[0][0])  # create word object
+                word_dict[word.word] = word_dict.get(word.word, float(len(word_dict) + 1))
+                word_dict[word.lemma] = word_dict.get(word.lemma, float(len(word_dict) + 1))
+                speaker_dict[word.speaker] = speaker_dict.get(word.speaker, float(len(speaker_dict) + 1))
+                pos_tag_dict[word.pos] = pos_tag_dict.get(word.pos, float(len(pos_tag_dict) + 1))
+
+                if word.is_reference():
+                    instance_list.append([word.get_document_id_item(1), word.get_document_id_item(2),
+                                          word_dict[word.word],
+                                          pos_tag_dict[word.pos],
+                                          word_dict[word.lemma],
+                                          speaker_dict[word.speaker],
+                                          word.get_entity_class()])
+            except (KeyError, ImportError):
+                print('error: {}'.format(new_line))
+                continue
+
+    return instance_list, word_dict, speaker_dict, pos_tag_dict
+
+
+def add_map_file_to_nn_model(map_file):
+    entities = dict()
+    for line in map_file:
+        components = line.rstrip().split()
+        if components:
+            entities[components[0]] = components[1]
+    return entities
+
+
+''' Neural Network model functions beginning 
+############################################
+'''
 
 
 class ConllWord:
     pattern_for_document_id = None
+    pattern_for_entity_ref = re.compile(r'(?:\(?)([0-9]{1,3})(?:\)?)')
 
     def __init__(self, **kwargs):
         """
@@ -357,20 +417,20 @@ class ConllWord:
             else:
                 self.extra_items[k] = v
 
-        # find and fix the parser errors and fix those we can there are two common classes of these errors
-        if self.e_id is None:
-            parser_error = self.speaker.split(' ')
-            if len(parser_error) == 2:
-                self.speaker = parser_error[0]
-                self.e_id = parser_error[1]
-            elif len(parser_error) == 1 and parser_error[0] == '*':
-                self.e_id = self.ne
-                self.ne = self.speaker
-                self.speaker = self.ws[1:]
-                self.ws = sEcm.EMPTY
-            else:
-                # there are ~50 really jacked up entries so if we find them just ignore those lines
-                raise ImportError
+                # # find and fix the parser errors and fix those we can there are two common classes of these errors
+                # if self.e_id is None:
+                #     parser_error = self.speaker.split(' ')
+                #     if len(parser_error) == 2:
+                #         self.speaker = parser_error[0]
+                #         self.e_id = parser_error[1]
+                #     elif len(parser_error) == 1 and parser_error[0] == '*':
+                #         self.e_id = self.ne
+                #         self.ne = self.speaker
+                #         self.speaker = self.ws[1:]
+                #         self.ws = sEcm.EMPTY
+                #     else:
+                #         # there are ~50 really jacked up entries so if we find them just ignore those lines
+                #         raise ImportError
 
     def __str__(self):
         """
@@ -392,6 +452,19 @@ class ConllWord:
         :return: string of conll word
         """
         return str(self)
+
+    def is_reference(self):
+        if ConllWord.pattern_for_entity_ref.match(self.e_id) is None:
+            return False
+        else:
+            return True
+
+    def get_entity_class(self):
+        m = ConllWord.pattern_for_entity_ref.match(self.e_id)
+        if m is not None:
+            return m.group(1)
+        else:
+            return -1
 
     def get_document_id_item(self, item):
         # type: (object) -> str
@@ -427,7 +500,6 @@ class ConllWord:
 
 
 class CorpusDistributions:
-
     def __init__(self, speaker, main_character=False):
         self.speaker = speaker
         self.words = dict()
