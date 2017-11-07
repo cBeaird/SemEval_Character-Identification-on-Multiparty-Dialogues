@@ -18,7 +18,7 @@ conll_file = openFile(path_to_data)
 df = sEcf.conll_2_dataframe(conll_file)                               # Put Conll File into a pandas dataframe
 df = df[['Word']]                                                     # Delete every column besides the words
 df['Word'] = df['Word'].str.replace(r'^[\.\?]|!{1,2}|\?!$', '<END>')  # Replace the end of sentences with the <END> tag
-df = df.replace(r'[,\'-\*]|\.+', np.nan, regex=True)                  # Replace all the junk with NaN
+df = df.replace(r'^[,\'-\*]$|^\.+$', np.nan, regex=True)                  # Replace all the junk with NaN
 df = df.dropna()                                                      # Drop all of the junk
 
 text = []                           # List that will hold the format gensim needs

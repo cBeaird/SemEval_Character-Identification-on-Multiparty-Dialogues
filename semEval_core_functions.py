@@ -242,14 +242,14 @@ def conll_2_dataframe(conll_text):
             namedEntities.append(word.get(sEcm.NE, None))
             entityIDs.append(word.get(sEcm.ENTITY_ID, None))
 
-    df = pd.DataFrame.from_dict({'Document ID': doc_ids, 'Scene ID': scene_ids, "Token ID": token_ids,
-                                 "Word": words, "POS Tag": posTags, "POS Tag Expanded": posTags_expanded,
-                                 "Lemma": lemmatizedWords, "Frameset ID": frameSetIDs, "Word Sense": wordSenses,
-                                 "Speaker": speakers, "Named Entity": namedEntities, "Entity ID": entityIDs})
+    df = pd.DataFrame.from_dict({'Document_ID': doc_ids, 'Scene_ID': scene_ids, "Token_ID": token_ids,
+                                 "Word": words, "POS_Tag": posTags, "POS_Tag_Expanded": posTags_expanded,
+                                 "Lemma": lemmatizedWords, "Frameset_ID": frameSetIDs, "Word_Sense": wordSenses,
+                                 "Speaker": speakers, "Named_Entity": namedEntities, "Entity_ID": entityIDs})
     # Extract the Season and episode data from "Document ID" and place it in format: season,episode
-    df["Document ID"] = df["Document ID"].str.replace(r'\/friends-s(\d+)e(\d+)',
+    df["Document_ID"] = df["Document_ID"].str.replace(r'\/friends-s(\d+)e(\d+)',
                                                       r'\1,\2')
-    extracted_doc_data = df["Document ID"].apply(lambda x: x.split(','))  # Split the previous format by comma
+    extracted_doc_data = df["Document_ID"].apply(lambda x: x.split(','))  # Split the previous format by comma
     df['Season'] = extracted_doc_data.apply(lambda x: x[0])  # Place the Season into its own column
     df['Episode'] = extracted_doc_data.apply(
         lambda x: x[1])  # Place the Episode into its own columnToken ID", "Word Sense", "Lemma",
