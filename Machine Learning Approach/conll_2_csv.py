@@ -1,5 +1,6 @@
 import semEval_core_model as sEcm
 import sys
+from sklearn.model_selection import train_test_split
 import semEval_core_functions as sEcf
 import gensim
 import pandas as pd
@@ -38,4 +39,7 @@ appended_data = pd.concat([df[["Season", "Episode",                       # Add 
                               word_vectors[:]], axis=1)
 df = pd.concat([appended_data[:], df["Entity_ID"]], axis=1)               # Add the labels back on
 
-df.to_csv("weka.csv", index=False)                                        # Place dataframe in a csv file
+train_set, test_set = train_test_split(df, test_size=.2, random_state=42) # Split the data into test and training data
+train_set.to_csv("training_vectors.csv", index=False)                     # Place dataframe in a csv file
+test_set.to_csv("testing_vectors.csv", index=False)                     # Place dataframe in a csv file
+
