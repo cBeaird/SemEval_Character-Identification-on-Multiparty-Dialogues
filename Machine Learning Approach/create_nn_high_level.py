@@ -8,7 +8,7 @@ training_vectors = train_df.drop(["Entity_ID"], axis=1)  # Drop the labels from 
 X_train = np.array(training_vectors.values, np.float)    # Place the feature vectors into a numpy array
 y_train = np.array(training_labels.values, np.int64)     # Place the labels into a numpy array
 
-feature_columns = [tf.feature_column.numeric_column("x", shape=[104])]  # All the features are important
+feature_columns = [tf.feature_column.numeric_column("x", shape=[105])]  # All the features are important
 
 classifier = tf.estimator.DNNClassifier(  # Create our DNN Classifier with 3 hidden layers
     feature_columns=feature_columns,

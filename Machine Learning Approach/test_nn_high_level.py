@@ -2,7 +2,7 @@ import pandas as pd
 import tensorflow as tf
 import numpy as np
 
-feature_columns = [tf.feature_column.numeric_column("x", shape=[104])]  # List the features
+feature_columns = [tf.feature_column.numeric_column("x", shape=[105])]  # List the features
 classifier = tf.estimator.DNNClassifier(                                # Load Classifier
     feature_columns=feature_columns,
     hidden_units=[512, 256, 128],

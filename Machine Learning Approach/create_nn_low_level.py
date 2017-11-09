@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 import pandas as pd
 
-n_inputs = 104        # There are 104 features
+n_inputs = 105        # There are 105 features
 n_hidden1 = 300       # The first hidden layer will have 300 neurons
 n_hidden2 = 100       # The second hidden layer will have 100 neurons
 n_outputs = 401       # There are 401 different classes
