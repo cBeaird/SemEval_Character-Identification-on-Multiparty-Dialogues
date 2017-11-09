@@ -31,13 +31,16 @@ df = df.dropna(subset=['Entity_ID'])                                      # Drop
 df["Speaker"] = pd.factorize(df['Speaker'])[0]                            # Place Speakers into numerical form
 dataframe_filter = df['Word'].str.contains(r'\w+')
 df = df[dataframe_filter]                                                 # Remove all the mentions that are not words
+temp_word_column = df[["Word"]]
 df["Word"] = df["Word"].apply(lambda x: word2vec_model[x].tolist())       # Change word to Word2Vec Representation
 word_vectors = df['Word'].apply(pd.Series)                                # Place word2vec values in their own columns
 word_vectors = word_vectors.rename(columns=lambda x: 'wv_' + str(x))      # Rename the columns from wv_0..wv_n
 appended_data = pd.concat([df[["Season", "Episode",                       # Add the word vectors to our dataframe
                                "Scene_ID", "Speaker"]],
                               word_vectors[:]], axis=1)
+appended_data = pd.concat([appended_data,temp_word_column], axis=1)
 df = pd.concat([appended_data[:], df["Entity_ID"]], axis=1)               # Add the labels back on
+df['Word'] = pd.factorize(df["Word"])[0]
 
 train_set, test_set = train_test_split(df, test_size=.2, random_state=42) # Split the data into test and training data
 train_set.to_csv("training_vectors.csv", index=False)                     # Place dataframe in a csv file
