@@ -79,8 +79,8 @@ def main():
         df = word2vec(df, word2vec_model_loc)
     if args["split"]:
         train_set, test_set = train_test_split(df, test_size=.2, random_state=42)
-        train_set.to_csv(args["output"]+"_train", index=False)
-        test_set.to_csv(args["output"]+"_test", index=False)
+        train_set.to_csv("train_" + args["output"], index=False)
+        test_set.to_csv("test_" + args["output"], index=False)
     else:
         df.to_csv(args["output"], index=False)
 
