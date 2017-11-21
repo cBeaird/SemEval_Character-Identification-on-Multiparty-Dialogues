@@ -37,3 +37,5 @@
 
 datasets-None-8c441e63-e82a-48e6-b1a7-07811cc80cd8-friends.train.trial/friends_entity_map.txt
 nn_model/
+Models/
+*.csv
