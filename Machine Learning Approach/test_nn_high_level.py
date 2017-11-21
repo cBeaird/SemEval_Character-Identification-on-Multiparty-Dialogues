@@ -3,6 +3,7 @@ import tensorflow as tf
 import numpy as np
 import argparse
 from sklearn.metrics import confusion_matrix
+from sklearn import metrics
 import matplotlib as mpl
 mpl.use('TkAgg')
 import matplotlib.pyplot as plt
@@ -20,8 +21,8 @@ pars.add_argument('-te', '--testing',
                   help='Filepath to the testing CSV')
 
 
-def load_classifier(model_directory):
-    feature_columns = [tf.feature_column.numeric_column("x", shape=[105])]
+def load_classifier(model_directory, number_of_features):
+    feature_columns = [tf.feature_column.numeric_column("x", shape=[number_of_features])]
     return tf.estimator.DNNClassifier(
            feature_columns=feature_columns,
            hidden_units=[512, 256, 128],
@@ -50,10 +51,16 @@ def make_predictions(classifier, test_data):
 def main():
     arguments = pars.parse_args()
     args = vars(arguments)
-    clf = load_classifier(args['model'])
     labels, vectors = split_labels_and_vectors(csv_path=args["testing"], label_name="Entity_ID")
+    number_of_features = vectors.shape[1]
+    clf = load_classifier(args['model'], number_of_features)
     preds = make_predictions(clf, vectors)
     print('\nMetrics\n')
+    print("accuracy: ", metrics.accuracy_score(labels, preds))
+    print("precision: ", metrics.precision_score(labels, preds,average="weighted"))
+    print("recall: ", metrics.recall_score(labels, preds,average="weighted"))
+    print("f1: ", metrics.f1_score(labels, preds,average="weighted"))
+    print("Geometric Mean", metrics.fowlkes_mallows_score(labels, preds))
     print(classification_report(labels, preds))
     print('\nConfusion Matrix\n')
     df_confusion = confusion_matrix(labels, preds, labels=range(400))

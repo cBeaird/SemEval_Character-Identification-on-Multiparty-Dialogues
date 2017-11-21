@@ -55,12 +55,12 @@ def factorize(df):
 
 
 def word2vec(df, model):
-    word2vec_model = gensim.models.Word2Vec.load(args["model"])
+    word2vec_model = gensim.models.Word2Vec.load(model)
     temp_word_column = df[["Word"]]
     df["Word"] = df["Word"].apply(lambda x: word2vec_model[x].tolist())  # Change word to Word2Vec Representation
     word_vectors = df['Word'].apply(pd.Series)  # Place word2vec values in their own columns
     word_vectors = word_vectors.rename(columns=lambda x: 'wv_' + str(x))  # Rename the columns from wv_0..wv_n
-    appended_data = pd.concat([df[["Season", "Episode", "Scene_ID", "Speaker"]], word_vectors[:]], axis=1)
+    appended_data = pd.concat([df[["Season", "Episode", "Scene_ID", "Speaker","Lemma","POS_Tag"]], word_vectors[:]], axis=1)
     appended_data = pd.concat([appended_data, temp_word_column], axis=1)
     df = pd.concat([appended_data[:], df["Entity_ID"]], axis=1)  # Add the labels back on
     return df
@@ -73,10 +73,10 @@ def main():
     conll_file = open_file(args["conll"])
     df = sEcf.conll_2_dataframe(conll_file)
     df = cleanDF(df)
-    if args["factorize"]:
-        df = factorize(df)
     if args["word2vec"]:
         df = word2vec(df, word2vec_model_loc)
+    if args["factorize"]:
+        df = factorize(df)
     if args["split"]:
         train_set, test_set = train_test_split(df, test_size=.2, random_state=42)
         train_set.to_csv("train_" + args["output"], index=False)
