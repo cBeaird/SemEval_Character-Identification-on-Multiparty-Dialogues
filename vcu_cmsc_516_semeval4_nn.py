@@ -135,20 +135,50 @@ if d['train']:
                                                                target_dtype=np.int,
                                                                features_dtype=np.int)
 
-    feature_columns = [tf.feature_column.numeric_column('instance', [6])]
+    # 'season', 'episode', 'word', 'pos', 'lemma', 'speaker', 'class'
+    train_array = np.array(training_set.data)
+    season = tf.feature_column.numeric_column('season')
+    season_v = train_array[:, 0]
+    episode = tf.feature_column.numeric_column('episode')
+    episode_v = train_array[:, 1]
+    word = tf.feature_column.numeric_column('word')
+    word_v = train_array[:, 2]
+    pos = tf.feature_column.numeric_column('pos')
+    pos_v = train_array[:, 3]
+    lemma = tf.feature_column.numeric_column('lemma')
+    lemma_v = train_array[:, 4]
+    speaker = tf.feature_column.numeric_column('speaker')
+    speaker_v = train_array[:, 5]
+
+    feature_columns = [season, episode, word, pos, lemma, speaker]
+    # feature_columns = [tf.feature_column.numeric_column('instance', [6])]
     classifier = tf.estimator.DNNClassifier(feature_columns=feature_columns,
-                                            hidden_units=[400, 250, 400],
+                                            hidden_units=[1000, 500, 401],
                                             n_classes=len(sEcm.nn_model[sEcm.MODEL_ENTITY_MAP]),
                                             model_dir='simple_nn_model')
 
-    train_function = tf.estimator.inputs.numpy_input_fn(x={'instance': np.array(training_set.data)},
+    train_function = tf.estimator.inputs.numpy_input_fn(x={'season': season_v, 'episode': episode_v,
+                                                           'word': word_v, 'pos': pos_v,
+                                                           'lemma': lemma_v, 'speaker': speaker_v},
+                                                        # {'instance': np.array(training_set.data)},
                                                         y=np.array(training_set.target),
                                                         num_epochs=None,
                                                         shuffle=True)
 
-    classifier.train(input_fn=train_function, steps=2000)
+    classifier.train(input_fn=train_function, steps=5000)
 
-    evaluate_function = tf.estimator.inputs.numpy_input_fn(x={'instance': np.array(evaluate_set.data)},
+    eval_array = np.array(evaluate_set.data)
+    season_ev = eval_array[:, 0]
+    episode_ev = eval_array[:, 1]
+    word_ev = eval_array[:, 2]
+    pos_ev = eval_array[:, 3]
+    lemma_ev = eval_array[:, 4]
+    speaker_ev = eval_array[:, 5]
+
+    evaluate_function = tf.estimator.inputs.numpy_input_fn(x={'season': season_ev, 'episode': episode_ev,
+                                                              'word': word_ev, 'pos': pos_ev,
+                                                              'lemma': lemma_ev, 'speaker': speaker_ev},
+                                                           # {'instance': np.array(evaluate_set.data)},
                                                            y=np.array(evaluate_set.target),
                                                            num_epochs=1,
                                                            shuffle=False)
