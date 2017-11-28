@@ -90,9 +90,9 @@ d = vars(arguments)
 if d['train'] and d['evaluate']:
     print('cannot train  and evaluate at the same time on the same data file!\n')
     exit(0)
-if d['data_file'] is None:
-    print('need a data file to evaluate or train on')
-    # exit(0)
+# if d['data_file'] is None:
+#     print('need a data file to evaluate or train on')
+#     # exit(0)
 
 # columns object will always exist because there is a default list of columns so we can set the columns
 # the training data uses the Default_headings in the model python file so we dont need to care about dealing
@@ -120,11 +120,11 @@ if d['train']:
                 parsed_data_file.write(','.join(str(c) for c in instance) + '\n')
 
     # Tensorflow part
-    training_set = learn.datasets.base.load_csv_without_header(filename='train_allfile.csv',
+    training_set = learn.datasets.base.load_csv_without_header(filename='test_nn_data_file.csv',
                                                                target_dtype=np.int,
                                                                features_dtype=np.float)
 
-    evaluate_set = learn.datasets.base.load_csv_without_header(filename='test_allfile.csv',
+    evaluate_set = learn.datasets.base.load_csv_without_header(filename='train_nn_data_file.csv',
                                                                target_dtype=np.int,
                                                                features_dtype=np.float)
 
@@ -161,7 +161,7 @@ if d['train']:
     classifier = tf.estimator.DNNClassifier(feature_columns=feature_columns,
                                             hidden_units=[1000, 500, 401],
                                             n_classes=len(sEcm.nn_model[sEcm.MODEL_ENTITY_MAP]),
-                                            model_dir='simple_nn_model_vectors')
+                                            model_dir='tensorflow_nn_w2v_model')
 
     Y = np.array(training_set.target)
     train_function = tf.estimator.inputs.numpy_input_fn(x={'season': season_v, 'episode': episode_v, 'scene': scene_v,
@@ -172,7 +172,7 @@ if d['train']:
                                                         num_epochs=None,
                                                         shuffle=True)
 
-    classifier.train(input_fn=train_function, steps=5000)
+    classifier.train(input_fn=train_function, steps=20000)
 
     eval_array = np.array(evaluate_set.data)
     season_ev = eval_array[:, 0]
