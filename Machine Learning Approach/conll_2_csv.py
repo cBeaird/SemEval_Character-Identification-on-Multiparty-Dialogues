@@ -20,11 +20,14 @@ pars.add_argument('-m', '--model',
 pars.add_argument('-c', '--conll',
                   help='Path of the Connll File')
 pars.add_argument('-f', '--factorize',
-                  help='Boolean arguement on rather to turn strings to numerical form')
+                  help='Boolean argument on rather to turn strings to numerical form',
+                  action = 'store_true')
 pars.add_argument('-w2v', '--word2vec',
-                  help='Boolean arguement on rather to use Word2Vec')
+                  help='Boolean argument on rather to use Word2Vec',
+                  action='store_true')
 pars.add_argument("-s", '--split',
-                  help='Boolean arguement on rather to split into training & testing CSVs')
+                  help='Boolean arguement on rather to split into training & testing CSVs',
+                  action='store_true')
 pars.add_argument("-o", '--output',
                   help='Output file name')
 
