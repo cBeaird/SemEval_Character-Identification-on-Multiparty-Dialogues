@@ -14,8 +14,8 @@ def split_labels_and_vectors(csv_path,label_name):
     vectors = df.drop([label_name], axis=1).values
     return labels,vectors
 
-def main():
 
+def main():
     labelName = "Entity_ID"
     labels, vectors = split_labels_and_vectors(csv_path="../test_vectors.csv", label_name="Entity_ID")
 
@@ -37,6 +37,8 @@ def print_metrics(targs, preds):
     print("recall: ", metrics.recall_score(targs, preds, average="weighted"))
     print("f1: ", metrics.f1_score(targs, preds, average="weighted"))
     print("Geometric Mean", metrics.fowlkes_mallows_score(targs, preds))
+    print("Kappa", metrics.cohen_kappa_score(targs, preds))
+
 
 
 if __name__ == "__main__":
