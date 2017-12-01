@@ -120,14 +120,20 @@ if d['train']:
                 parsed_data_file.write(','.join(str(c) for c in instance) + '\n')
 
     # Tensorflow part
-    training_set = learn.datasets.base.load_csv_without_header(filename='test_nn_data_file.csv',
+    # can be uncommented to get a lower level view of the execution will cause slower execution
+    # tf.logging.set_verbosity(tf.logging.INFO)
+
+    # load the training CSV into the system
+    training_set = learn.datasets.base.load_csv_without_header(filename='train_nn_data_file.csv',
                                                                target_dtype=np.int,
                                                                features_dtype=np.float)
 
-    evaluate_set = learn.datasets.base.load_csv_without_header(filename='train_nn_data_file.csv',
+    # load the eval data into the system
+    evaluate_set = learn.datasets.base.load_csv_without_header(filename='test_nn_data_file.csv',
                                                                target_dtype=np.int,
                                                                features_dtype=np.float)
 
+    # this is what the columns look like in the CSV used to help create the feature vectors
     # Season, Episode, Scene_ID, Speaker, Lemma, POS_Tag,
     # wv_0, wv_1, wv_2, wv_3, wv_4, wv_5, wv_6, wv_7, wv_8, wv_9, wv_10, wv_11, wv_12, wv_13, wv_14, wv_15, wv_16,
     # wv_17, wv_18, wv_19, wv_20, wv_21, wv_22, wv_23, wv_24, wv_25, wv_26, wv_27, wv_28, wv_29, wv_30, wv_31, wv_32,
@@ -137,6 +143,7 @@ if d['train']:
     # wv_81, wv_82, wv_83, wv_84, wv_85, wv_86, wv_87, wv_88, wv_89, wv_90, wv_91, wv_92, wv_93, wv_94, wv_95, wv_96,
     # wv_97, wv_98, wv_99, Word, Entity_ID
 
+    # for each feature create the appropriate feature column and the matching dict vector/matrix with the data
     train_array = np.array(training_set.data)
     season = tf.feature_column.numeric_column('season')
     season_v = train_array[:, 0]
@@ -156,6 +163,8 @@ if d['train']:
     word = tf.feature_column.numeric_column('word')
     word_v = train_array[:, 106]
 
+    # build the estimator this is the tensorflow high level api we feed in the
+    # features, network definition and the model
     feature_columns = [season, episode, scene, speaker, lemma, pos, w2v, word]
     # feature_columns = [tf.feature_column.numeric_column('instance', [6])]
     classifier = tf.estimator.DNNClassifier(feature_columns=feature_columns,
@@ -172,8 +181,10 @@ if d['train']:
                                                         num_epochs=None,
                                                         shuffle=True)
 
-    classifier.train(input_fn=train_function, steps=20000)
+    # execute the actual training steps
+    classifier.train(input_fn=train_function, steps=5000)
 
+    # create the eval training function as well as the associated feature vector/matrix
     eval_array = np.array(evaluate_set.data)
     season_ev = eval_array[:, 0]
     episode_ev = eval_array[:, 1]
@@ -194,8 +205,15 @@ if d['train']:
                                                            num_epochs=1,
                                                            shuffle=False)
 
-    accuracy = classifier.evaluate(input_fn=evaluate_function)['accuracy']
+    # uncomment the below code (199-202) to use the generated model to predict new instances.
+    # a = list(classifier.predict(input_fn=evaluate_function))
+    # print('class,predicted class')
+    # for i, item in enumerate(a):
+    #     print('{},{}'.format(eY[i], item['classes'][0]))
 
+    # if the above code is uncomneted comment this out the eval will execute the same generator function
+    # and provide the results for the test data set.
+    accuracy = classifier.evaluate(input_fn=evaluate_function)['accuracy']
     print(accuracy)
 else:
     print('Nothing was asked of me!\nThank you and have a good day!')

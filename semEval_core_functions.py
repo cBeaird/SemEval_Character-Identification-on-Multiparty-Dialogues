@@ -15,6 +15,7 @@ import operator
 import semEval_core_model as sEcm
 from conllu.parser import parse
 import pandas as pd
+from random import shuffle
 
 __author__ = 'Casey Beaird'
 __credits__ = ['Casey Beaird', 'Chase Greco', 'Brandon Watts']
@@ -332,12 +333,30 @@ def evaluate(data_file):
     return answers
 
 
+def split_raw_conll_file(file):
+    """
+    shuffle and return the raw conll data as a list used for k-fold validation
+    :param file: file path where conll file is
+    :return: list of conll data one line per list item
+    """
+    data = list()
+    with open(file, 'r') as conll_file:
+        data = conll_file.readlines()
+    shuffle(data)
+    return data
+
+
 ''' Neural Network model functions beginning 
 ############################################
 '''
 
 
 def train_nn_model(data_file):
+    """
+    non-word to vector csv generation for training the neural network bags each instance
+    :param data_file: conll data file
+    :return: tuple of instances the word/speaker/pos tag sets.
+    """
     feature_header = ['season', 'episode', 'word', 'pos', 'lemma', 'speaker', 'class']
     word_dict = dict()
     speaker_dict = dict()
@@ -374,6 +393,12 @@ def train_nn_model(data_file):
 
 
 def add_map_file_to_nn_model(map_file):
+    """
+    using the same model structure as the naive implementation add the new map file to the model (not really needed
+    as it turns out tensorflow stores it's own model).
+    :param map_file: map file.
+    :return:  list of entities in the map file
+    """
     entities = dict()
     for line in map_file:
         components = line.rstrip().split()
