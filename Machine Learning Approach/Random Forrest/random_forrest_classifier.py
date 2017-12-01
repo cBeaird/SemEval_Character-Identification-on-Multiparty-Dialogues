@@ -12,7 +12,7 @@ def split_labels_and_vectors(csv_path,label_name):
 
 def main():
     labels, vectors = split_labels_and_vectors(csv_path="../train_vectors.csv", label_name="Entity_ID")
-    clf = RandomForestClassifier(n_jobs=-1, max_features='sqrt', oob_score=True,
+    clf = RandomForestClassifier(n_jobs=-1, max_features=None, oob_score=True,
                                  n_estimators=63, max_depth=30, min_samples_leaf=1,
                                  )
     clf.fit(vectors, labels)
