@@ -1,9 +1,10 @@
-import semEval_core_model as sEcm
 import argparse
+
 import gensim
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
+
 import semEval_core_functions as sEcf
 
 __credits__ = ['Casey Beaird', 'Chase Greco', 'Brandon Watts']
@@ -20,13 +21,15 @@ pars.add_argument('-m', '--model',
 pars.add_argument('-c', '--conll',
                   help='Path of the Connll File')
 pars.add_argument('-f', '--factorize',
-                  help='Boolean arguement on rather to turn strings to numerical form')
+                  help='Boolean argument on rather to turn strings to numerical form')
 pars.add_argument('-w2v', '--word2vec',
-                  help='Boolean arguement on rather to use Word2Vec')
+                  help='Boolean argument on rather to use Word2Vec')
 pars.add_argument("-s", '--split',
-                  help='Boolean arguement on rather to split into training & testing CSVs')
+                  help='Boolean argument on rather to split into training & testing CSVs')
 pars.add_argument("-o", '--output',
                   help='Output file name')
+pars.add_argument("-p", '--paren',
+                  help='Boolean argument on whether to include parentheses around class')
 
 
 def open_file(filepath):
@@ -60,9 +63,15 @@ def word2vec(df, model):
     df["Word"] = df["Word"].apply(lambda x: word2vec_model[x].tolist())  # Change word to Word2Vec Representation
     word_vectors = df['Word'].apply(pd.Series)  # Place word2vec values in their own columns
     word_vectors = word_vectors.rename(columns=lambda x: 'wv_' + str(x))  # Rename the columns from wv_0..wv_n
-    appended_data = pd.concat([df[["Season", "Episode", "Scene_ID", "Speaker","Lemma","POS_Tag"]], word_vectors[:]], axis=1)
+    appended_data = pd.concat([df[["Season", "Episode", "Scene_ID", "Speaker", "Lemma", "POS_Tag"]], word_vectors[:]],
+                              axis=1)
     appended_data = pd.concat([appended_data, temp_word_column], axis=1)
     df = pd.concat([appended_data[:], df["Entity_ID"]], axis=1)  # Add the labels back on
+    return df
+
+
+def paren(df):
+    df["Entity_ID"] = df["Entity_ID"].apply(lambda c: '(' + c + ')')
     return df
 
 
@@ -75,6 +84,8 @@ def main():
     df = cleanDF(df)
     if args["word2vec"]:
         df = word2vec(df, word2vec_model_loc)
+    if args["paren"]:
+        df = paren(df)
     if args["factorize"]:
         df = factorize(df)
     if args["split"]:
