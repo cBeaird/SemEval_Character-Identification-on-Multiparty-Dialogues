@@ -285,7 +285,6 @@ def update_dist_counts(counts):
 
 def evaluate(data_file):
     # type: (answers) -> list
-    # todo take out the print statements if they are not needed
     """
     evaluate the file based on the model and return a list of answers
     :param data_file: eval file
@@ -319,28 +318,28 @@ def evaluate(data_file):
                             answers.append(answer)
                             if answer == c_word.e_id:
                                 number_correct += 1
-                            print('correct: {}\t\t\tour answer:{}'.format(c_word.e_id, answer))
+                            print('{},{}'.format(c_word.e_id, answer))
                         else:
-                            print('nope')
+                            # we guess 248 for all the answers we have no idea about
+                            print('{},{}'.format(c_word.e_id, '(248)'))
                     else:
-                        # todo better than just guessing please
-                        print('guess')
+                        # we guess 248 for all the answers we have no idea about
+                        print('{},{}'.format(c_word.e_id, '(248)'))
                 except (KeyError, ImportError):
-                    # todo this wont work here we'll need to just guess at random at worst
                     print('KeyError')
                     continue
     print('total: {}, total correct: {}, accuracy: {:2f}'.format(number, number_correct, number_correct / number))
     return answers
 
 
-def split_raw_conll_file(file):
+def split_raw_conll_file(d_file):
     """
     shuffle and return the raw conll data as a list used for k-fold validation
     :param file: file path where conll file is
     :return: list of conll data one line per list item
     """
     data = list()
-    with open(file, 'r') as conll_file:
+    with open(d_file, 'r') as conll_file:
         data = conll_file.readlines()
     shuffle(data)
     return data
