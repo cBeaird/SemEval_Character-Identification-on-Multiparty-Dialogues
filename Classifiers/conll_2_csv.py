@@ -1,9 +1,11 @@
-import semEval_core_model as sEcm
 import argparse
 import gensim
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
+import sys
+sys.path.append("./")
+import semEval_core_model as sEcm
 import semEval_core_functions as sEcf
 
 __credits__ = ['Casey Beaird', 'Chase Greco', 'Brandon Watts']

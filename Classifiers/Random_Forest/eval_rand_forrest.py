@@ -1,11 +1,19 @@
-def warn(*args, **kwargs):
-    pass
-import warnings
-warnings.warn = warn
-
 import pandas as pd
 from sklearn.externals import joblib
 from sklearn import metrics
+import warnings
+import argparse
+
+pars = argparse.ArgumentParser(usage='Creates a Random Forest Classifier',
+                               formatter_class=argparse.RawTextHelpFormatter,
+                               description='''Creates a Random Forest Classifier for Semeval''',
+                               version='0.1')
+
+pars.add_argument('-te', '--test',
+                  help='Path to the testing CSV file')
+
+pars.add_argument('-m', '--model',
+                  help='Path to the Model')
 
 
 def split_labels_and_vectors(csv_path,label_name):
@@ -16,18 +24,17 @@ def split_labels_and_vectors(csv_path,label_name):
 
 
 def main():
+    warnings.warn = warn
+    arguments = pars.parse_args()
+    args = vars(arguments)
     labelName = "Entity_ID"
-    labels, vectors = split_labels_and_vectors(csv_path="../test_vectors.csv", label_name="Entity_ID")
+    labels, vectors = split_labels_and_vectors(csv_path=args['test'], label_name="Entity_ID")
 
-    clf = load_classifier()
+    clf = joblib.load(args['model'])
     preds = clf.predict(vectors)
     targs = labels
 
     print_metrics(targs, preds)
-
-
-def load_classifier():
-    return joblib.load('../Models/random-forrest.pkl')
 
 
 def print_metrics(targs, preds):
@@ -40,6 +47,8 @@ def print_metrics(targs, preds):
     print("Kappa", metrics.cohen_kappa_score(targs, preds))
 
 
+def warn(*args, **kwargs):
+    pass
 
 if __name__ == "__main__":
     main()
