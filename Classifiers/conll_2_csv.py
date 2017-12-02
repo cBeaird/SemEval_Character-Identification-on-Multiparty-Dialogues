@@ -1,25 +1,20 @@
 import argparse
-
 import gensim
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
-<<<<<<< HEAD:Classifiers/conll_2_csv.py
 import sys
 sys.path.append("./")
 import semEval_core_model as sEcm
-=======
-
->>>>>>> origin/master:Machine Learning Approach/conll_2_csv.py
 import semEval_core_functions as sEcf
 
 __credits__ = ['Casey Beaird', 'Chase Greco', 'Brandon Watts']
 __license__ = 'MIT'
 __version__ = '0.1'
 
-pars = argparse.ArgumentParser(usage='Evaluates DNN',
+pars = argparse.ArgumentParser(usage='Turn a Conll File in to a CSV',
                                formatter_class=argparse.RawTextHelpFormatter,
-                               description='''Evaluates DNN for Semeval''',
+                               description='''Any Conll File to CSV''',
                                version='0.1')
 
 pars.add_argument('-m', '--model',
@@ -27,15 +22,19 @@ pars.add_argument('-m', '--model',
 pars.add_argument('-c', '--conll',
                   help='Path of the Connll File')
 pars.add_argument('-f', '--factorize',
-                  help='Boolean argument on rather to turn strings to numerical form')
+                  help='Boolean argument on rather to turn strings to numerical form',
+                  action='store_true')
 pars.add_argument('-w2v', '--word2vec',
-                  help='Boolean argument on rather to use Word2Vec')
+                  help='Boolean argument on rather to use Word2Vec',
+                  action='store_true')
 pars.add_argument("-s", '--split',
-                  help='Boolean argument on rather to split into training & testing CSVs')
+                  help='Boolean argument on rather to split into training & testing CSVs',
+                  action='store_true')
 pars.add_argument("-o", '--output',
                   help='Output file name')
 pars.add_argument("-p", '--paren',
-                  help='Boolean argument on whether to include parentheses around class')
+                  help='Boolean argument on whether to include parentheses around class',
+                  action='store_true')
 
 
 def open_file(filepath):
