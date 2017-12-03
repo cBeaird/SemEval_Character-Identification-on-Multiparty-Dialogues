@@ -4,6 +4,7 @@ from sklearn import metrics
 import warnings
 import argparse
 
+
 pars = argparse.ArgumentParser(usage='Creates a Random Forest Classifier',
                                formatter_class=argparse.RawTextHelpFormatter,
                                description='''Creates a Random Forest Classifier for Semeval''',
@@ -35,6 +36,8 @@ def main():
     targs = labels
 
     print_metrics(targs, preds)
+    print("OOB Error Rate", 1 - clf.oob_score_)
+
 
 
 def print_metrics(targs, preds):
@@ -49,6 +52,7 @@ def print_metrics(targs, preds):
 
 def warn(*args, **kwargs):
     pass
+
 
 if __name__ == "__main__":
     main()

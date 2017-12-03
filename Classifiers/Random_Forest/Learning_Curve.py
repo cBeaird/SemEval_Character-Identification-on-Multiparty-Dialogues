@@ -4,8 +4,8 @@ from sklearn.ensemble import RandomForestClassifier
 import matplotlib as mpl
 mpl.use('TkAgg')
 import matplotlib.pyplot as plt
-from sklearn.cross_validation import KFold
-from sklearn.learning_curve import learning_curve
+from sklearn.model_selection import KFold
+from sklearn.model_selection import learning_curve
 
 
 def split_labels_and_vectors(csv_path,label_name):
@@ -17,8 +17,7 @@ def split_labels_and_vectors(csv_path,label_name):
 
 def plot_curve(X, y, cv):
     lg = RandomForestClassifier(n_jobs=-1, max_features=None, oob_score=True,
-                                 n_estimators=63, max_depth=30, min_samples_leaf=1,
-                                 )
+                                 n_estimators=63, max_depth=30, min_samples_leaf=1)
 
     lg.fit(X, y)
 
@@ -50,7 +49,6 @@ def plot_curve(X, y, cv):
     plt.ylim(-.1, 1.1)
     plt.show()
 
-size = 1000
-cv = KFold(size, shuffle=True)
-labels, vectors = split_labels_and_vectors(csv_path="../vectors.csv", label_name="Entity_ID")
+cv = KFold(10, shuffle=True)
+labels, vectors = split_labels_and_vectors(csv_path="../../vectors.csv", label_name="Entity_ID")
 plot_curve(vectors, labels, cv)
