@@ -5,3 +5,4 @@ python Classifiers/conll_2_csv.py -m Classifiers/friends_word2vec_model -c datas
 python Classifiers/Random_Forest/Random_Forest.py -tr vectors.csv -o Classifiers/Models/random-forest.pkl
 python Classifiers/Random_Forest/Random_Forest_Evaluation.py -te vectors.csv -m Classifiers/Models/random-forest.pkl
 rm Classifiers/Models/random-forest.pkl
+rm vectors.csv
