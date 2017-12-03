@@ -182,7 +182,7 @@ if d['train']:
                                                         shuffle=True)
 
     # execute the actual training steps
-    classifier.train(input_fn=train_function, steps=5000)
+    classifier.train(input_fn=train_function, steps=20000)
 
     # create the eval training function as well as the associated feature vector/matrix
     eval_array = np.array(evaluate_set.data)
