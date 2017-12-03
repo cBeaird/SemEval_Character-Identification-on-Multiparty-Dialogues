@@ -19,12 +19,12 @@ __version__ = '0.1'
 
 
 def split_labels_and_vectors(csv_path,label_name):
-    '''
+    """
     Method used to split a csv into two dataframes: labels and vectors
     :param csv_path: Path to the CSV file
     :param label_name: Name of the label column
     :return: label and vector dataframes
-    '''
+    """
     df = pd.read_csv(csv_path)
     df_labels = df[label_name].values.tolist()
     df_vectors = df.drop([label_name], axis=1).values
