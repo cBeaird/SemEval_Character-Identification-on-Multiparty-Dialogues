@@ -32,12 +32,12 @@ def split_labels_and_vectors(csv_path,label_name):
 
 
 def plot_curve(x, y, folds):
-    '''
+    """
     Method used to plot the Learning Curve
     :param x: vectors
     :param y: labels
     :param folds: how many folds for cross-validation
-    '''
+    """
 
     # Create and Train a classifier
     classifier = RandomForestClassifier(n_jobs=-1, max_features=None, oob_score=True,
