@@ -108,7 +108,17 @@ In this case we will return Mike and be correct. The process is repeated for the
 so we will simply guess the answer from the entities provided.
 
 ### Machine Learning Approach
-We then explored machine learning approaches to compare against our most likely tag baseline. To begin we use gensim to map  the mentions to vectors using a skip-gram model and the training data provided as the corpora. We added additional orthographic features to our word2vec vector in an attempt to combine lexical and orthographic information. Feature Vectors have the following structure: [Season, Episode, Scene ID, Speaker, Word2Vec Representation, Entity ID].
+We then explored machine learning approaches to compare against our most likely tag baseline. 
+To begin we use gensim to map  the mentions to vectors using a skip-gram model and the training data 
+provided as the corpora. We added additional orthographic features to our word2vec vector in an attempt 
+to combine lexical and orthographic information. Feature Vectors have the following structure: 
+[Season, Episode, Scene ID, Speaker, Word2Vec Representation, Entity ID].
+
+#### Deep Neural Networks
+
+#### Decision Tree
+
+#### Random Forest
 
 We then examined the performance of three machine learning algorithms, Naïve Bayes, SVM, and C.45, utilizing these 
 feature vectors.  The run configurations of each algorithm can be seen in the "Running Example" section below.  To 
@@ -121,6 +131,7 @@ packages `conllu` and `gensim`
 ```
 pip install conllu
 pip install gensim
+pip install tensorflow
 ```
 #### Weka  
 The latest stable versions of weka are available here https://www.cs.waikato.ac.nz/ml/weka/downloading.html  
@@ -154,6 +165,7 @@ java weka.attributeSelection.GainRatioAttributeEval -i weka.arff
 * [Genism](https://radimrehurek.com/gensim/)
 * [Conllu](https://github.com/EmilStenstrom/conllu)
 * [Weka](https://www.cs.waikato.ac.nz/ml/weka/)
+* [TensorFlow](https://www.tensorflow.org)
 
 ## Authors
 * **Casey Beaird** Construction of basic Python framework for the intial parsing of data and training of the simple probabilistic model
