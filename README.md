@@ -115,7 +115,7 @@ to combine lexical and orthographic information. Feature Vectors have the follow
 [Season, Episode, Scene ID, Speaker, Word2Vec Representation, Entity ID].
 
 #### Deep Neural Networks
-
+![TensorFlow Input Layer](https://github.com/cBeaird/SemEval_Character-Identification-on-Multiparty-Dialogues/blob/master/TF_input.png)
 #### Decision Tree
 
 #### Random Forest
