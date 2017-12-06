@@ -117,6 +117,18 @@ To compare against our most likely tag baseline, we explored 3 machine learning 
 #### Deep Neural Networks
 ![TensorFlow Input Layer](https://github.com/cBeaird/SemEval_Character-Identification-on-Multiparty-Dialogues/blob/master/TF_input.png)
 #### Decision Tree
+Due to promising results in our intial experimentats, we chose to utilize the C45 decision tree provided by Weka as our initial "best" machine learning approach.  We initially ran C45 on feature vectors that did not include the Lemma, POS Tag, or Word features.  We then ran it again including those features to observe the performance 
+
+##### Evaluation
+We performed 10-fold cross validation on both datasets containing the the full and truncated feature vectors.  The results are shown below:
+
+| Features  | Accuracy | Precision | Recall | F1-measure | Geometric Mean | Kappa |
+|:---------:|:---------|:----------|:-------|:-----------|:---------------|:------|
+| Truncated | 72%      | 70%       | 72%    | 70%        | --             | 69%   |
+| Full      | 74%      | 72%       | 74%    | 72%        | 63%            | 72%   |
+
+We observe a increase in performance across all metrics when the additional features of Lemma, POS Tag, and Word are included. This result illustrates the benefits this type of model can receive from more features as it allows the tree to make more discriminative branches and thus achieve higher performance.
+
 
 #### Random Forest
 
