@@ -122,14 +122,14 @@ To compare against our most likely tag baseline, we explored 3 machine learning 
 
 ##### Creation
 
-Due to the success of the Decision Trees, we thought that an ensemble method might do better considering the class imbalance. We used scikit-learn's implementation of Random Forest for our ensemble method. We used scikit-learn's GridSearchCV to pick the best hyperparameters. Creation of the random forest is as follows:
+Due to the success of the Decision Trees, we thought that an ensemble method might do better considering the class imbalance ultimately choosing scikit-learn's implementation of Random Forest. GridSearchCV was used to pick the best hyperparameters. Creation of the Random Forest is as follows:
 ```
 classifier = RandomForestClassifier(n_jobs=-1, max_features=None, oob_score=True,n_estimators=63, max_depth=30, min_samples_leaf=1)
 ```
 
 ##### Evaluation
 
-The Random Forrest's did surprisingly well but the not as well as the numbers might suggest. Due to the giant class imbalance the accuracy, precision, and recall will, of course, be skewed. More information can be gained by looking at the Geometric mean and the OOB Error Rate. The Geometric mean is 82% which means we are still overfitting our model. The OOB Error rate (The proportion of times that j is not equal to the true class of n averaged over all cases) is 24% and with all things considered, this is actually pretty good.
+The Random Forrest did surprisingly well, but the not as well as the numbers might suggest. Due to the giant class imbalance the accuracy, precision, and recall will, of course, be skewed. More information can be gained by looking at the Geometric Mean and the OOB Error Rate. The Geometric mean is 82% which means we are still overfitting our model. The OOB Error rate (The proportion of times that j is not equal to the true class of n averaged over all cases) is 24% and with all things considered, this is actually pretty good.
 
 | Accuracy | Precision | Recall | F1-measure | Geometric Mean | Kappa | OOB Error Rate |
 |:---------|:----------|:-------|:-----------|:---------------|:------|:--------------:|
