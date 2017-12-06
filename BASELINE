@@ -1,61 +1,46 @@
 Baseline
 
-    We used the most likely tag as our baseline. This method selects the entity tag by
-    looping over the possible tags and selecting the one with the highest probability given the
-    joint probability of the speaker and word.
+    For stage 2 we utilized the C45 implementation in Stage 1, our best classifier, as our basline for Stage 2.
 
 Evaluation Metrics
 
-    To compare metrics we are just using straight accuracy. In step 2 we will used more advanced metrics.
+    To compare the performance of our classifiers we examined the accuracy, precison, recall, f1-measure, geometric mean, and kappa statistic
 
 Results
 
     Baseline
 
-        total: 13514.0, total correct: 9772.0, accuracy: 0.723102
+        Accuracy: 74%
+        Precision: 72%
+        Recall:  74%
+        F1 Measure : 72%
+        Geometric Mean: 63%
+        Kappa: 72%
 
-    SVM
 
-        === Summary ===
+    Deep Neural Net
+    
+        Accuracy: 70%
+        Precision: 72%
+        Recall:  70%
+        F1 Measure : 70%
+        Geometric Mean: 61%
+        Kappa: 68%
 
-        Correctly Classified Instances    	  8060          	   62.0143 %
-        Incorrectly Classified Instances  	  4937          	   37.9857 %
-        Kappa statistic                          0.5847
-        Mean absolute error                      0.006
-        Root mean squared error                  0.0547
-        Relative absolute error            	   107.6734 %
-        Root relative squared error        	   103.7594 %
-        Total Number of Instances            12997
 
-    Naive Bayes
+    Random Forest
+    
+        Accuracy: 90%
+        Precision: 90%
+        Recall:  90%
+        F1 Measure : 90%
+        Geometric Mean: 82%
+        Kappa: 89%
+        OOB Error Rate: 24%
 
-        === Summary ===
-
-        Correctly Classified Instances         157                1.208  %
-        Incorrectly Classified Instances     12840               98.792  %
-        Kappa statistic                          0.0117
-        Mean absolute error                      0.006
-        Root mean squared error                  0.0649
-        Relative absolute error                107.1933 %
-        Root relative squared error            123.2711 %
-        Total Number of Instances            12997
-
-    C.45
-
-        === Summary ===
-
-        Correctly Classified Instances   	 10985           	   84.5195 %
-        Incorrectly Classified Instances  	  2012           	   15.4805 %
-        Kappa statistic                          0.8317
-        Mean absolute error                      0.0013
-        Root mean squared error                  0.0252
-        Relative absolute error                 22.7873 %
-        Root relative squared error             47.7837 %
-        Total Number of Instances            12997
 
 Explanation of Tables
 
-    For the baseline we just computed the pure accuracy. For the machine learning, we computed the accuracy along with a
-    we a few more statistics which will be utilized in stage 2.
+    The Random Forest result also includes the OOB Error Rate in leiu of performing 10-fold cross-validation, as this was considered uncessary after performing a literature review of Random Forest
 
 
