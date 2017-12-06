@@ -107,12 +107,12 @@ and the word, then return that answer.
 In this case we will return Mike and be correct. The process is repeated for the word guy which we have not seen before 
 so we will simply guess the answer from the entities provided.
 
-### Machine Learning Approach
-We then explored machine learning approaches to compare against our most likely tag baseline. 
-To begin we use gensim to map  the mentions to vectors using a skip-gram model and the training data 
-provided as the corpora. We added additional orthographic features to our word2vec vector in an attempt 
-to combine lexical and orthographic information. Feature Vectors have the following structure: 
-[Season, Episode, Scene ID, Speaker, Word2Vec Representation, Entity ID].
+### Machine Learning 
+
+To compare against our most likely tag baseline, we explored 3 machine learning techniques: C.45 Decision Trees, Neural Networks, and Random Forests. Feature vectors include both data from the conll file as well as word2vec representations of the word created with gensim. Feature Vectors have the following structure:
+```
+[Season, Episode, Scene ID, Speaker, Lemma, POS Tag, Word2Vec Representation, Word]
+```
 
 #### Deep Neural Networks
 ![TensorFlow Input Layer](https://github.com/cBeaird/SemEval_Character-Identification-on-Multiparty-Dialogues/blob/master/TF_input.png)
@@ -120,10 +120,24 @@ to combine lexical and orthographic information. Feature Vectors have the follow
 
 #### Random Forest
 
-We then examined the performance of three machine learning algorithms, Naïve Bayes, SVM, and C.45, utilizing these 
-feature vectors.  The run configurations of each algorithm can be seen in the "Running Example" section below.  To 
-evaluate the performance we compared the accuracies of each algorithm when trained and tested on the entire training set
-and when utilizing 10 fold cross-validation against the accuracy of our most likely tag baseline. 
+##### Creation
+
+Due to the success of the Decision Trees, we thought that an ensemble method might do better considering the class imbalance. We used scikit-learn's implementation of Random Forest for our ensemble method. We used scikit-learn's GridSearchCV to pick the best hyperparameters. Creation of the random forest is as follows:
+```
+classifier = RandomForestClassifier(n_jobs=-1, max_features=None, oob_score=True,n_estimators=63, max_depth=30, min_samples_leaf=1)
+```
+
+##### Evaluation
+
+The Random Forrest's did surprisingly well but the not as well as the numbers might suggest. Due to the giant class imbalance the accuracy, precision, and recall will, of course, be skewed. More information can be gained by looking at the Geometric mean and the OOB Error Rate. The Geometric mean is 82% which means we are still overfitting our model. The OOB Error rate (The proportion of times that j is not equal to the true class of n averaged over all cases) is 24% and with all things considered, this is actually pretty good.
+
+| Accuracy | Precision | Recall | F1-measure | Geometric Mean | Kappa | OOB Error Rate |
+|:---------|:----------|:-------|:-----------|:---------------|:------|:--------------:|
+| 90%      | 90%       | 90%    | 90%        | 82%            | 89%   | 24%            |
+
+We did not perform 10-fold cross validation as Random Forests inherently do that on creation since each tree is constructed using a different bootstrap sample from the original data.
+
+Breiman [1996b], gives empirical evidence to show that the out-of-bag estimate is as accurate as using a test set of the same size as the training set. Therefore, using the out-of-bag error estimate removes the need for a set-aside test set.
 
 ### Prerequisites
 #### Python 2.7
