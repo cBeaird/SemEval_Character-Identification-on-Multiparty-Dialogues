@@ -115,7 +115,27 @@ To compare against our most likely tag baseline, we explored 3 machine learning 
 ```
 
 #### Deep Neural Networks
+We naively choose deep neural networks to attempt to solve the conference resolution problem. I say naively not because DNNs are not a good choice for this type of problem but rather that we do not have a dataset that is well suited for training the Neural Network. The multi-class problem we have would have done well under a DNN if we were able to obtain adequate training examples for all of the classes.   Alternately, we might have been able to take advantage of over/under sampling to reduce the imbalance but for many of the classes we have only a single training instance, for ~10% of cases we have no labeled training instances. With inadequate training instances the DNN resulted in lower performance than we had anticipated. We create our DNN with three hidden layers using a relu activation function with seven input tensors. We used the default Adagrad optimizer for our results, though we also tried the Adam optimizer however it had a negative impact on performance. 
+
+Our classifier is created as follows:
+```
+estimator.DNNClassifier(feature_columns=feature_columns, 
+                        hidden_units=[1000, 500, 401], 
+                        n_classes=len(401), 
+                        model_dir='tensorflow_nn_w2v_model')
+```
+The feature set we use to train the DNN is the full feature set: 
+[episode, lemma, POS, scene, season, speaker, word, word2vec embedding]
+The DNN is the only classifier that utilized the word embeddings as a distinct feature vector. By this I mean that the Neural Network treats the embedding as a single feature with dimension 100. This is in contrast to the other classifiers that view each scalar of the embedding as a distinct and disjoint feature. Below is the input layer from our network.
 ![TensorFlow Input Layer](https://github.com/cBeaird/SemEval_Character-Identification-on-Multiparty-Dialogues/blob/master/TF_input.png)
+
+##### Evaluation
+We are still able to train our DNN classifier to beat our naive implementation of just choosing the highest rank entity given the word and speaker. We do not perform k-fold validation on the DNN as the cost of training and splitting is high. Instead we use an 80/20 split on the shuffled data. Our results from the DNN are below.
+
+| Accuracy | Precision | Recall | F1-measure | Geometric Mean | Kappa |
+|:---------|:----------|:-------|:-----------|:---------------|:------|
+| 70%      | 72%       | 70%    | 70%        | 61%            | 68%   |
+
 #### Decision Tree
 Due to promising results in our intial experimentats, we chose to utilize the C45 decision tree provided by Weka as our initial "best" machine learning approach.  We initially ran C45 on feature vectors that did not include the Lemma, POS Tag, or Word features.  We then ran it again including those features to observe the performance 
 
