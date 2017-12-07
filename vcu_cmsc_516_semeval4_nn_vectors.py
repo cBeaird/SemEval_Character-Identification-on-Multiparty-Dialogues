@@ -15,6 +15,14 @@ from sklearn.model_selection import train_test_split
 import tensorflow as tf
 import tensorflow.contrib.learn as learn
 import numpy as np
+from sklearn import metrics
+import warnings
+
+
+def warn(*args, **kwargs):
+    pass
+
+warnings.warn = warn
 
 __author__ = 'Casey Beaird'
 __credits__ = ['Casey Beaird', 'Chase Greco', 'Brandon Watts']
@@ -195,6 +203,7 @@ if d['train']:
     w2v_ev = eval_array[:, 6:106]
     word_ev = eval_array[:, 106]
 
+    # build the evaluate function
     eY = np.array(evaluate_set.target)
     evaluate_function = tf.estimator.inputs.numpy_input_fn(x={'season': season_ev, 'episode': episode_ev,
                                                               'scene': scene_ev, 'speaker': speaker_ev,
@@ -205,16 +214,21 @@ if d['train']:
                                                            num_epochs=1,
                                                            shuffle=False)
 
-    # uncomment the below code (199-202) to use the generated model to predict new instances.
-    # a = list(classifier.predict(input_fn=evaluate_function))
-    # print('class,predicted class')
-    # for i, item in enumerate(a):
-    #     print('{},{}'.format(eY[i], item['classes'][0]))
+    # using the evaluate function get the predictions from the eval data set.
+    a = list(classifier.predict(input_fn=evaluate_function))
+    eP = list()
+    for item in a:
+        eP.append(item['class_ids'][0])
 
-    # if the above code is uncomneted comment this out the eval will execute the same generator function
-    # and provide the results for the test data set.
-    accuracy = classifier.evaluate(input_fn=evaluate_function)['accuracy']
-    print(accuracy)
+    # print the metrics from the eval function
+    print('f1 score: {}'.format(metrics.f1_score(eY, eP, average='weighted')))
+    print('accuracy: {}'.format(metrics.accuracy_score(eY, eP)))
+    print('precision: {}'.format(metrics.precision_score(eY, eP, average='weighted')))
+    print('recall: {}'.format(metrics.recall_score(eY, eP, average='weighted')))
+    print('geo mean: {}'.format(metrics.fowlkes_mallows_score(eY, eP)))
+    print('kappa: {}'.format(metrics.cohen_kappa_score(eY, eP)))
+    # confusion_matrix = metrics.confusion_matrix(eY, eP)
+
 else:
     print('Nothing was asked of me!\nThank you and have a good day!')
 exit(0)
