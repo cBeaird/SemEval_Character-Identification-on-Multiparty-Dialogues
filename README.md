@@ -171,6 +171,16 @@ We did not perform 10-fold cross validation as Random Forests inherently do that
 
 Breiman [1996b], gives empirical evidence to show that the out-of-bag estimate is as accurate as using a test set of the same size as the training set. Therefore, using the out-of-bag error estimate removes the need for a set-aside test set.
 
+### Overall Results
+The below results clearly show that Random Forest out performs all the other classifiers.
+
+|measure	    |F1		    |accuracy	|precision	|recall		|mean error	|kappa		|
+|---------------|-----------|-----------|-----------|-----------|-----------|-----------|
+|Naive approach	|0.600		|0.624		|0.621		|0.624		|0.472		|0.586		|
+|Neural Network	|0.709		|0.708		|0.723		|0.708		|0.615		|0.684		|
+|C45		    |0.724		|0.739		|0.718		|0.739		|0.628		|0.715		|
+|Random Forest	|**0.901**	|**0.902**	|**0.904**	|**0.902**	|**0.822**	|**0.894**	|
+
 ### Prerequisites
 #### Python 2.7
 packages `conllu` and `gensim`
@@ -214,7 +224,7 @@ java weka.attributeSelection.GainRatioAttributeEval -i weka.arff
 * [TensorFlow](https://www.tensorflow.org)
 
 ## Authors
-* **Casey Beaird** Construction of basic Python framework for the intial parsing of data and training of the simple probabilistic model
+* **Casey Beaird** Construction of basic Python framework for the intial parsing of data and training of the simple probabilistic model and Tensorflow DNN creation.
 * **Chase Greco** Team coordination and development of machine learing models in Weka
 * **Brandon Watts** Development of additional data parsing methods, exctracting of base features into feature vectors, and feature vector manipulation in Word2Vec
 
