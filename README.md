@@ -107,23 +107,79 @@ and the word, then return that answer.
 In this case we will return Mike and be correct. The process is repeated for the word guy which we have not seen before 
 so we will simply guess the answer from the entities provided.
 
-### Machine Learning Approach
-We then explored machine learning approaches to compare against our most likely tag baseline. 
-To begin we use gensim to map  the mentions to vectors using a skip-gram model and the training data 
-provided as the corpora. We added additional orthographic features to our word2vec vector in an attempt 
-to combine lexical and orthographic information. Feature Vectors have the following structure: 
-[Season, Episode, Scene ID, Speaker, Word2Vec Representation, Entity ID].
+### Machine Learning 
+
+To compare against our most likely tag baseline, we explored 3 machine learning techniques: C.45 Decision Trees, Neural Networks, and Random Forests. Feature vectors include both data from the conll file as well as word2vec representations of the word created with gensim. Feature Vectors have the following structure:
+```
+[Season, Episode, Scene ID, Speaker, Lemma, POS Tag, Word2Vec Representation, Word]
+```
 
 #### Deep Neural Networks
+We naively choose deep neural networks to attempt to solve the conference resolution problem. I say naively not because DNNs are not a good choice for this type of problem but rather that we do not have a dataset that is well suited for training the Neural Network. The multi-class problem we have would have done well under a DNN if we were able to obtain adequate training examples for all of the classes.   Alternately, we might have been able to take advantage of over/under sampling to reduce the imbalance but for many of the classes we have only a single training instance, for ~10% of cases we have no labeled training instances. With inadequate training instances the DNN resulted in lower performance than we had anticipated. We create our DNN with three hidden layers using a relu activation function with seven input tensors. We used the default Adagrad optimizer for our results, though we also tried the Adam optimizer however it had a negative impact on performance. 
+
+Our classifier is created as follows:
+```
+estimator.DNNClassifier(feature_columns=feature_columns, 
+                        hidden_units=[1000, 500, 401], 
+                        n_classes=len(401), 
+                        model_dir='tensorflow_nn_w2v_model')
+```
+The feature set we use to train the DNN is the full feature set: 
+[episode, lemma, POS, scene, season, speaker, word, word2vec embedding]
+The DNN is the only classifier that utilized the word embeddings as a distinct feature vector. By this I mean that the Neural Network treats the embedding as a single feature with dimension 100. This is in contrast to the other classifiers that view each scalar of the embedding as a distinct and disjoint feature. Below is the input layer from our network.
+![TensorFlow Input Layer](https://github.com/cBeaird/SemEval_Character-Identification-on-Multiparty-Dialogues/blob/master/TF_input.png)
+
+##### Evaluation
+We are still able to train our DNN classifier to beat our naive implementation of just choosing the highest rank entity given the word and speaker. We do not perform k-fold validation on the DNN as the cost of training and splitting is high. Instead we use an 80/20 split on the shuffled data. Our results from the DNN are below.
+
+| Accuracy | Precision | Recall | F1-measure | Geometric Mean | Kappa |
+|:---------|:----------|:-------|:-----------|:---------------|:------|
+| 70%      | 72%       | 70%    | 70%        | 61%            | 68%   |
 
 #### Decision Tree
+Due to promising results in our intial experimentats, we chose to utilize the C45 decision tree provided by Weka as our initial "best" machine learning approach.  We initially ran C45 on feature vectors that did not include the Lemma, POS Tag, or Word features.  We then ran it again including those features to observe the performance 
+
+##### Evaluation
+We performed 10-fold cross validation on both datasets containing the the full and truncated feature vectors.  The results are shown below:
+
+| Features  | Accuracy | Precision | Recall | F1-measure | Geometric Mean | Kappa |
+|:---------:|:---------|:----------|:-------|:-----------|:---------------|:------|
+| Truncated | 72%      | 70%       | 72%    | 70%        | --             | 69%   |
+| Full      | 74%      | 72%       | 74%    | 72%        | 63%            | 72%   |
+
+We observe a increase in performance across all metrics when the additional features of Lemma, POS Tag, and Word are included. This result illustrates the benefits this type of model can receive from more features as it allows the tree to make more discriminative branches and thus achieve higher performance.
+
 
 #### Random Forest
 
-We then examined the performance of three machine learning algorithms, Naïve Bayes, SVM, and C.45, utilizing these 
-feature vectors.  The run configurations of each algorithm can be seen in the "Running Example" section below.  To 
-evaluate the performance we compared the accuracies of each algorithm when trained and tested on the entire training set
-and when utilizing 10 fold cross-validation against the accuracy of our most likely tag baseline. 
+##### Creation
+
+Due to the success of the Decision Trees, we thought that an ensemble method might do better considering the class imbalance ultimately choosing scikit-learn's implementation of Random Forest. GridSearchCV was used to pick the best hyperparameters. Creation of the Random Forest is as follows:
+```
+classifier = RandomForestClassifier(n_jobs=-1, max_features=None, oob_score=True,n_estimators=63, max_depth=30, min_samples_leaf=1)
+```
+
+##### Evaluation
+
+The Random Forrest did surprisingly well, but the not as well as the numbers might suggest. Due to the giant class imbalance the accuracy, precision, and recall will, of course, be skewed. More information can be gained by looking at the Geometric Mean and the OOB Error Rate. The Geometric mean is 82% which means we are still overfitting our model. The OOB Error rate (The proportion of times that j is not equal to the true class of n averaged over all cases) is 24% and with all things considered, this is actually pretty good.
+
+| Accuracy | Precision | Recall | F1-measure | Geometric Mean | Kappa | OOB Error Rate |
+|:---------|:----------|:-------|:-----------|:---------------|:------|:--------------:|
+| 90%      | 90%       | 90%    | 90%        | 82%            | 89%   | 24%            |
+
+We did not perform 10-fold cross validation as Random Forests inherently do that on creation since each tree is constructed using a different bootstrap sample from the original data.
+
+Breiman [1996b], gives empirical evidence to show that the out-of-bag estimate is as accurate as using a test set of the same size as the training set. Therefore, using the out-of-bag error estimate removes the need for a set-aside test set.
+
+### Overall Results
+The below results clearly show that Random Forest out performs all the other classifiers.
+
+|measure	    |F1		    |accuracy	|precision	|recall		|mean error	|kappa		|
+|---------------|-----------|-----------|-----------|-----------|-----------|-----------|
+|Naive approach	|0.600		|0.624		|0.621		|0.624		|0.472		|0.586		|
+|Neural Network	|0.709		|0.708		|0.723		|0.708		|0.615		|0.684		|
+|C45		    |0.724		|0.739		|0.718		|0.739		|0.628		|0.715		|
+|Random Forest	|**0.901**	|**0.902**	|**0.904**	|**0.902**	|**0.822**	|**0.894**	|
 
 ### Prerequisites
 #### Python 2.7
@@ -168,7 +224,7 @@ java weka.attributeSelection.GainRatioAttributeEval -i weka.arff
 * [TensorFlow](https://www.tensorflow.org)
 
 ## Authors
-* **Casey Beaird** Construction of basic Python framework for the intial parsing of data and training of the simple probabilistic model
+* **Casey Beaird** Construction of basic Python framework for the intial parsing of data and training of the simple probabilistic model and Tensorflow DNN creation.
 * **Chase Greco** Team coordination and development of machine learing models in Weka
 * **Brandon Watts** Development of additional data parsing methods, exctracting of base features into feature vectors, and feature vector manipulation in Word2Vec
 
