@@ -3,44 +3,64 @@
 # AUTHOR: Chase Greco
 
 # Add root project directory to PYTHON path environment variable
-export PYTHONPATH=${PYTHONPATH}:..
+export PYTHONPATH=${PYTHONPATH}:.
 
 # Make results directory
 mkdir Results
 
-# Build probabilistic model
-echo 'Training Simple Probabilistic Model'
-python vcu_cmsc516_semeval4.py -m friendsEp --train -mf ./datasets-None-8c441e63-e82a-48e6-b1a7-07811cc80cd8-friends.train.trial/friends_entity_map.txt -df ./datasets-None-8c441e63-e82a-48e6-b1a7-07811cc80cd8-friends.train.trial/friends.train.episode_delim.conll
-echo 'Evaluating Simple Probabilistic Model'
-python vcu_cmsc516_semeval4.py -m friendsEp --evaluate -df ./datasets-None-8c441e63-e82a-48e6-b1a7-07811cc80cd8-friends.train.trial/friends.train.episode_delim.conll > ./Results/ProbabilisticResults.txt
-echo 'Results stored in Results/ProbabilisticResults.txt'
-
-# Build Word2Vec Model
-echo 'Training Word2Vec Model'
-cd Machine\ Learning\ Approach/
-python create_model.py ../datasets-None-8c441e63-e82a-48e6-b1a7-07811cc80cd8-friends.train.trial/friends.train.episode_delim.conll
-
-# Build Feature vectors
-echo 'Building Feature Vectors'
-python start.py ../datasets-None-8c441e63-e82a-48e6-b1a7-07811cc80cd8-friends.train.trial/friends.train.episode_delim.conll ../datasets-None-8c441e63-e82a-48e6-b1a7-07811cc80cd8-friends.train.trial/friends_entity_map.txt
+# Build Weka Feature Vectors
+echo 'Building Weka Feature Vectors'
+python Classifiers/conll_2_csv.py -m Classifiers/friends_word2vec_model -c datasets-None-8c441e63-e82a-48e6-b1a7-07811cc80cd8-friends.train.trial/friends.train.episode_delim.conll -w2v -p -o weka.csv
 
 # Convert csv to arff format
 echo 'Converting data to arff format'
+sed -i "s/'//g" weka.csv
 java weka.core.converters.CSVLoader weka.csv -B 50000 > weka.arff
+echo 'Done!'
 
 # Train Models
-echo 'Training Naive Bayes'
-java weka.classifiers.bayes.NaiveBayes -t weka.arff > ../Results/NaiveBayesResults.txt
-echo 'Results stored in Results/NaiveBayesResults.txt'
-
 echo 'Training C45'
-java weka.classifiers.trees.J48 -C 0.25 -M 2 -t weka.arff > ../Results/C45Results.txt
-echo 'Results stored in Results/C45Results.txt'
+java weka.classifiers.trees.J48 -C 0.25 -M 2 -t weka.arff > Results/C45.txt
+echo 'Results stored in Results/C45.txt'
 
-echo 'Training SVM'
-java -Xmx6g weka.classifiers.functions.SMO -C 1.0 -L 0.001 -P 1.0E-12 -N 0 -V -1 -W 1 -K "weka.classifiers.functions.supportVector.PolyKernel -E 1.0 -C 250007" -calibrator "weka.classifiers.functions.Logistic -R 1.0E-8 -M -1 -num-decimal-places 4" -t weka.arff > ../Results/SVMResults.txt
-echo 'Results stored in Results/SVMResults.txt'
+# Cleanup
+rm ./weka.csv
+rm ./weka.arff
 
-echo 'Calculating the Mutual Information (Gain Ratio) for each attribute'
-java weka.attributeSelection.GainRatioAttributeEval -i weka.arff > ../Results/MutualInfoResults.txt
-echo 'Results stored in Results/MutualInfoResults.txt'
+# Build NN Feature Vectors
+echo 'Building Neural Net Feature Vectors'
+python ./Classifiers/conll_2_csv.py -m ./Classifiers//friends_word2vec_model -c ./datasets-None-8c441e63-e82a-48e6-b1a7-07811cc80cd8-friends.train.trial/friends.train.episode_delim.conll -f -w2v -s -o nn_data_file.csv
+
+sed '1d' test_nn_data_file.csv > tpf; mv tpf test_nn_data_file.csv
+sed '1d' train_nn_data_file.csv > tpff; mv tpff train_nn_data_file.csv
+
+rm -rf ./tensorflow_nn_w2v_model
+
+mkdir ./tensorflow_nn_w2v_model
+echo 'Done!'
+
+# Training Neural Net
+echo 'Training Neural Net'
+python ./vcu_cmsc_516_semeval4_nn_vectors.py -m friends_nn_ep --train -mf ./datasets-None-8c441e63-e82a-48e6-b1a7-07811cc80cd8-friends.train.trial/friends_entity_map.txt > Results/NeuralNet.txt
+echo 'Results stored in Results/NeuralNet.txt'
+
+#Cleanup
+rm -rf ./tensorflow_nn_w2v_model
+rm test_nn_data_file.csv
+rm train_nn_data_file.csv
+
+# Build Random Forest Feature Vectors
+echo 'Building Random Forest Feature Vectors'
+python Classifiers/conll_2_csv.py -m Classifiers/friends_word2vec_model -c datasets-None-8c441e63-e82a-48e6-b1a7-07811cc80cd8-friends.train.trial/friends.train.episode_delim.conll -f -o vectors.csv -w2v
+echo 'Done!'
+
+# Training Random Forest
+echo 'Training Random Forest'
+python Classifiers/Random_Forest/Random_Forest.py -tr vectors.csv -o Classifiers/Models/random-forest.pkl
+python Classifiers/Random_Forest/Random_Forest_Evaluation.py -te vectors.csv -m Classifiers/Models/random-forest.pkl > Results/RandomForest.txt
+echo 'Results stored in Results/RandomForest.txt'
+
+#Cleanup
+rm Classifiers/Models/random-forest.pkl
+rm train_vectors.csv
+rm test_vectors.csv
