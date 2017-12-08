@@ -64,3 +64,4 @@ echo 'Results stored in Results/RandomForest.txt'
 rm Classifiers/Models/random-forest.pkl
 rm train_vectors.csv
 rm test_vectors.csv
+rm vectors.csv
